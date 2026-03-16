@@ -15,12 +15,12 @@ Read personal Slack direct messages from the last 24 hours. Flag anything import
 
 ---
 
-### 2. Review Campaigns Channels
+### 2. Review Product Channels
 
 **Skill:** `skills/review-campaigns-channels/SKILL.md`
 **State field:** `daily_start.review_campaigns_channels`
 
-Find all Slack channels with your product keyword in the name. Read recent messages, summarise activity and flag important threads.
+Find all Slack channels with "Product" in the name. Read recent messages, summarise activity and flag important threads.
 
 ---
 

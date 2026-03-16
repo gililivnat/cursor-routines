@@ -1,6 +1,6 @@
 # Routines Orchestrator
 
-This is the master control file for daily and weekly routines. A Cursor rule reads this file at the start of every conversation and executes the flag logic below.
+This is the master control file for the user's daily and weekly routines. The Cursor rule reads this file at the start of every conversation and executes the flag logic below.
 
 ---
 
@@ -49,7 +49,7 @@ Check each group flag:
 
 ### Step 4 -- Check scheduled tasks
 
-After handling routines, read your scheduled tasks file and check for:
+After handling routines, read `your scheduled tasks file` and check for:
 - **Recurring weekly (Monday):** flag if today is Monday
 - **Recurring weekly (Friday):** flag if today is Friday
 - **One-off tasks:** flag if today is on or after the due date
@@ -72,7 +72,7 @@ These files list which skills to run and in what order. They are lightweight orc
 | Routine | File | When |
 |---------|------|------|
 | Start of Day | `daily/start-of-day.md` | Every morning (first session of the day) |
-| End of Day | `daily/end-of-day.md` | End of working day / when user asks |
+| End of Day | `daily/end-of-day.md` | End of working day / when asked |
 | Week Summary | `weekly/week-summary.md` | Friday |
 | Week Planning | `weekly/week-planning.md` | Monday |
 | Quarterly Planning | `weekly/quarterly-planning.md` | Last month of quarter / on demand |
@@ -81,14 +81,14 @@ These files list which skills to run and in what order. They are lightweight orc
 
 ## Skills Registry
 
-All routine steps are backed by skills. The agent reads the SKILL.md file before executing each step.
+All routine steps are backed by skills in `skills/`. The agent reads the SKILL.md file before executing each step.
 
 ### Daily Start Skills
 
 | Order | Skill | Path | State Field |
 |-------|-------|------|-------------|
 | 1 | Review Slack DMs | `skills/review-slack-dms/SKILL.md` | `review_slack_dms` |
-| 2 | Review Campaigns Channels | `skills/review-campaigns-channels/SKILL.md` | `review_campaigns_channels` |
+| 2 | Review Product Channels | `skills/review-campaigns-channels/SKILL.md` | `review_campaigns_channels` |
 | 3 | Summarise Slack + Suggest Tasks | `skills/summarise-slack-and-suggest-tasks/SKILL.md` | `summarise_slack_suggest_tasks` |
 | 4 | Review Daily Metrics | `skills/review-daily-metrics/SKILL.md` | `review_daily_metrics` |
 | -- | Review Upcoming Meetings | `skills/review-upcoming-meetings/SKILL.md` | `review_upcoming_meetings` (placeholder) |
@@ -98,7 +98,7 @@ All routine steps are backed by skills. The agent reads the SKILL.md file before
 
 | Order | Skill | Path | State Field |
 |-------|-------|------|-------------|
-| 1 | Summarise Campaigns Day | `skills/summarise-campaigns-day/SKILL.md` | `summarise_campaigns_day` |
+| 1 | Summarise Product Day | `skills/summarise-campaigns-day/SKILL.md` | `summarise_campaigns_day` |
 | 2 | Review Notetaker Meetings | `skills/review-notetaker-meetings/SKILL.md` | `review_notetaker_meetings` |
 
 ### Weekly Skills
@@ -111,7 +111,7 @@ All routine steps are backed by skills. The agent reads the SKILL.md file before
 
 ---
 
-## Presenting Routines to the User
+## Presenting Routines to the user
 
 When routines are due, present them as a brief summary:
 
@@ -120,14 +120,14 @@ Routines due this session:
 
 **Start of Day** (4 steps remaining)
 1. Review Slack DMs
-2. Review Campaigns channels
-3. Summarise Slack + suggest Todoist tasks
+2. Review Product channels
+3. Summarise Slack + suggest tasks
 4. Review daily metrics
 
 Shall I run through them now?
 ```
 
-Wait for confirmation before executing. If confirmed, run each skill in order, updating `state.md` after each one completes.
+Wait for the user's confirmation before executing. If he says yes, run each skill in order, updating `state.md` after each one completes.
 
 ---
 
@@ -137,4 +137,4 @@ Wait for confirmation before executing. If confirmed, run each skill in order, u
 - **Never run EOD routines in the morning** unless the user explicitly asks.
 - **Always update state.md** after each skill completes, not just at the end.
 - **Commented-out fields are inactive.** Do not run skills for commented fields. When a new MCP is connected, uncomment the field to activate.
-- **Scheduled tasks** are checked separately and are not part of the flag system. They follow their own cadence/due-date logic.
+- **Scheduled tasks in `your scheduled tasks file`** are checked separately and are not part of the flag system. They follow their own cadence/due-date logic.

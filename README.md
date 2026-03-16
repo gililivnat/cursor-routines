@@ -29,7 +29,7 @@ Cursor Rule (always-on)
 The `state.md` file has YAML frontmatter tracking:
 
 ```yaml
-date: "2026-03-13"           # last checked date
+date: "2026-03-13"
 daily_start:
   flag: 0                     # 0 = not done, 1 = all steps complete
   review_slack_dms: false      # individual step tracking
@@ -47,8 +47,8 @@ daily_start:
 ## Routines Included
 
 ### Daily: Start of Day
-1. **Review Slack DMs** — scan personal messages, flag what needs a response
-2. **Review product channels** — read all Slack channels matching a keyword, summarise activity
+1. **Review Slack DMs** — scan personal messages and threads you're part of, flag what needs a response
+2. **Review product channels** — read all Slack channels matching a keyword, check threads you're in, summarise activity
 3. **Summarise + suggest tasks** — consolidate Slack findings, suggest actionable tasks
 4. **Review daily metrics** — query your data warehouse, surface highlights and anomalies
 5. **Review upcoming meetings** *(placeholder)* — needs a Calendar MCP
@@ -63,15 +63,22 @@ daily_start:
 - **Plan the week** (Monday) — review carry-overs, set top 3 priorities
 - **Plan the quarter** (last month of Q) — review OKRs, draft next quarter priorities
 
+## Key Features
+
+- **Thread tracking:** DM and channel review skills check for threads you're part of where someone has replied since your last message, flagging conversations that need a quick response
+- **HTML output:** Skills generate styled HTML reports (dark theme, metric cards, priority lists) — easily customisable via the shared template
+- **Task suggestions:** Morning briefing consolidates Slack activity and suggests actionable tasks for your task manager
+- **Idempotent execution:** If a session crashes mid-routine, the next session picks up where it left off
+
 ## Structure
 
 ```
 cursor-routines/
 ├── README.md
-├── cursor-rule-example.md     — example Cursor rule to activate the system
+├── cursor-rule-example.md         — example Cursor rule to activate the system
 ├── routines/
-│   ├── ORCHESTRATOR.md        — flag logic and execution rules
-│   ├── state.example.md       — template state file (copy to state.md)
+│   ├── ORCHESTRATOR.md            — flag logic and execution rules
+│   ├── state.example.md           — template state file (copy to state.md)
 │   ├── daily/
 │   │   ├── start-of-day.md
 │   │   └── end-of-day.md
@@ -79,13 +86,13 @@ cursor-routines/
 │       ├── week-summary.md
 │       ├── week-planning.md
 │       └── quarterly-planning.md
-└── skills/                    — one SKILL.md per routine step
+└── skills/                        — one SKILL.md per routine step
     ├── review-slack-dms/
     ├── review-campaigns-channels/
     ├── summarise-slack-and-suggest-tasks/
     ├── review-daily-metrics/
-    ├── review-upcoming-meetings/     (placeholder)
-    ├── review-gmail/                 (placeholder)
+    ├── review-upcoming-meetings/         (placeholder)
+    ├── review-gmail/                     (placeholder)
     ├── summarise-campaigns-day/
     ├── review-notetaker-meetings/
     ├── summarise-week/
@@ -126,7 +133,7 @@ done
 ### 5. Configure for your product
 
 - In `review-campaigns-channels` and `summarise-campaigns-day`: change `CHANNEL_KEYWORD` to match your product's Slack channels
-- In `review-slack-dms`: set `YOUR_SLACK_USER_ID`
+- In `review-slack-dms`: set `YOUR_SLACK_USER_ID` to your actual Slack user ID
 - In `review-daily-metrics`: customise the Metrics to Track table for your product
 - In `review-notetaker-meetings`: adapt tool names to your AI notetaker MCP
 

@@ -5,11 +5,16 @@ description: Scans Gmail inbox for urgent or important emails and summarises wha
 
 # Review Gmail
 
-> **Status: INACTIVE.** This skill requires a Gmail MCP connection that is not yet configured. The skill definition is ready; once the MCP is connected, uncomment `review_gmail` in your `state.md` to activate.
+> **Status: INACTIVE.** This skill requires a Gmail MCP connection that is not yet configured. The skill definition is ready; once the MCP is connected, uncomment `review_gmail` in `routines/state.md` to activate.
 
 ## When to Use
 
-This skill is called by the start-of-day routine (step 6) once activated. It scans the inbox for anything urgent or important.
+This skill is called by the start-of-day routine (step 6) once activated. It scans the user's inbox for anything urgent or important.
+
+## Inputs
+
+- Gmail MCP (not yet connected)
+- Time window: last 24 hours
 
 ## Tools
 
@@ -30,8 +35,8 @@ Query the Gmail MCP for emails received in the last 24 hours, ordered by most re
 ### Step 2 -- Filter and prioritise
 
 Categorise emails by urgency:
-- **Urgent:** from known stakeholders, contains action words, flagged/starred
-- **Important:** from team members, contains product-related keywords, meeting invites
+- **Urgent:** from known stakeholders, contains action words ("please review", "deadline", "ASAP"), flagged/starred
+- **Important:** from team members, contains product-related keywords, meeting invites with agendas
 - **FYI:** newsletters, automated notifications, CC'd threads
 
 ### Step 3 -- Summarise urgent and important
@@ -48,9 +53,11 @@ For urgent and important emails, extract:
 
 **Needs response:**
 - [Sender]: [Subject] -- [What they need]
+- ...
 
 **Worth reading:**
 - [Sender]: [Subject] -- [1-line summary]
+- ...
 
 **Skippable:** [N] newsletters/notifications
 ```
@@ -66,7 +73,7 @@ For urgent and important emails, extract:
 When ready to activate:
 1. Connect a Gmail MCP in Cursor Settings
 2. Update the tool table above with actual tool names and parameters
-3. Uncomment `review_gmail: false` in your `state.md`
+3. Uncomment `review_gmail: false` in `routines/state.md`
 4. Test with a single run before relying on it daily
 
 ## Change Log

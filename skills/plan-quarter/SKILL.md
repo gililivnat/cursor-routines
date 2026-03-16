@@ -7,17 +7,18 @@ description: Supports quarterly planning by reviewing current quarter progress, 
 
 ## When to Use
 
-This skill is triggered during the **last month of each quarter** as part of the weekly routine. It can also be run on demand for quarterly planning.
+This skill is triggered during the **last month of each quarter** as part of the weekly routine. It can also be run on demand when asked to start quarterly planning.
 
 This is a thinking aid and planning scaffold, not a fully automated task.
 
 ## Inputs
 
 - Current quarter's OKRs (if documented)
-- Weekly summaries from across the quarter
-- Product strategy documentation
-- Competitor analysis reports (if available)
-- Scheduled tasks and their completion status
+- Weekly summaries from `your output folder/` across the quarter
+- Product strategy from `your product strategy documentation`
+- Competitor analysis reports from `your output folder/`
+- Scheduled tasks and their completion status from `your scheduled tasks file`
+- Memory: `your learnings file` and `your decisions file`
 
 ## Tools
 
@@ -26,82 +27,140 @@ This is a thinking aid and planning scaffold, not a fully automated task.
 | Tool | Purpose |
 |------|---------|
 | SQL query tool | Query quarterly metrics for progress review |
+| Data exploration tool | Explore trends across the quarter |
 
 ## Workflow
 
 ### Step 1 -- Review current quarter
 
 Read available weekly summaries from this quarter. Identify:
-- What the quarter's goals were
+- What the quarter's goals were (from OKRs or strategy docs)
 - What was actually shipped and accomplished
 - Which goals were met, partially met, or missed
 - Key decisions made and their outcomes
 
 ### Step 2 -- Summarise themes
 
-Across the quarter's work, identify major themes:
+Across the quarter's work, identify the major themes:
 - What topics dominated?
-- What customer patterns emerged?
-- What competitive shifts happened?
+- What customer patterns emerged (from churn reviews, Slack)?
+- What competitive shifts happened (from competitor reports)?
 - What surprised us?
 
 ### Step 3 -- Assess metrics trajectory
 
-Query quarterly metrics and compare against goals.
+Query quarterly metrics and compare against goals:
+- Where did we improve?
+- Where did we stall or decline?
+- What's the trajectory heading into next quarter?
 
 ### Step 4 -- Draft next quarter priorities
 
 Based on the review, suggest:
 - 3-5 themes or priorities for next quarter
-- For each: why it matters, what success looks like
-- Carry-forward items from this quarter
-- New opportunities identified
+- For each: why it matters, what success looks like, and what it connects to
+- Carry-forward items that didn't get done this quarter
+- New opportunities identified through the quarter
 
 ### Step 5 -- Produce the planning document
 
 ## Output
 
-Save to your quarterly planning folder and present in conversation.
+Generate an HTML file using the routine template at `skills/system/routine-html-template.md`. Read that file for the full CSS and component patterns.
 
-```
-# Quarterly Planning | Q[N] [YYYY] Review + Q[N+1] Priorities
+**File:** Save to `your output folder/quarter-plan-Q[N]-YYYY.html`
+**Also save** a markdown copy to `your output folder/q[N]-[YYYY]-planning.md` for archival.
+**Open:** Run `open` on the HTML file so it launches in the browser.
+**Inline:** Also print a 4-5 line summary in the conversation.
 
-## Quarter in review
+### HTML structure for this skill
 
-**Goals set:** [brief summary]
+```html
+<div class="header">
+  <h1>Quarterly Planning</h1>
+  <div class="subtitle">Q[N] [YYYY] Review + Q[N+1] Priorities</div>
+</div>
 
-**What we shipped:**
-- [Item] -- [impact if known]
+<div class="section">
+  <div class="section-title">Quarter in Review</div>
+  <div class="summary-text">[Brief summary of goals and whether they were met]</div>
+</div>
 
-**What we didn't get to:**
-- [Item] -- [why, and whether it still matters]
+<div class="section">
+  <div class="section-title">What We Shipped</div>
+  <div class="card success">
+    <div class="card-title">[Item]</div>
+    <div class="card-body">[Impact if known]</div>
+  </div>
+</div>
 
-## Metrics trajectory
+<div class="section">
+  <div class="section-title">What We Didn't Get To</div>
+  <div class="card warning">
+    <div class="card-title">[Item]</div>
+    <div class="card-body">[Why, and whether it still matters]</div>
+  </div>
+</div>
 
-| Metric | Start of Q | End of Q | Change | Target | Hit? |
-|--------|-----------|---------|--------|--------|------|
+<div class="section">
+  <div class="section-title">Metrics Trajectory</div>
+  <table>
+    <thead>
+      <tr><th>Metric</th><th>Start of Q</th><th>End of Q</th><th>Change</th><th>Target</th><th>Hit?</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>[Metric]</td><td>[Value]</td><td>[Value]</td>
+        <td><span class="badge [green/red]">[+/- %]</span></td>
+        <td>[Target]</td>
+        <td><span class="badge [green/red]">[Yes/No]</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-## Key themes this quarter
+<div class="section">
+  <div class="section-title">Key Themes</div>
+  <ol class="priority-list">
+    <li>
+      <div class="card-title">[Theme]</div>
+      <div class="card-body">[What we learned]</div>
+    </li>
+  </ol>
+</div>
 
-1. [Theme] -- [what we learned]
+<div class="section">
+  <div class="section-title">Competitive Landscape</div>
+  <div class="summary-text">[2-3 sentences on how the picture changed]</div>
+</div>
 
-## Suggested priorities for next quarter
+<hr class="divider">
 
-1. **[Priority]** -- [Why it matters. What success looks like.]
-2. **[Priority]** -- [Why. Success criteria.]
-3. **[Priority]** -- [Why. Success criteria.]
+<div class="section">
+  <div class="section-title">Suggested Priorities for Q[N+1]</div>
+  <ol class="priority-list">
+    <li>
+      <div class="card-title">[Priority]</div>
+      <div class="card-body">[Why it matters. What success looks like.]</div>
+    </li>
+  </ol>
+</div>
 
-## Open questions for planning
-
-- [Question that needs discussion before finalising]
+<div class="section">
+  <div class="section-title">Open Questions</div>
+  <ul class="item-list">
+    <li>[Question that needs discussion before finalising]</li>
+  </ul>
+</div>
 ```
 
 ## Guidelines
 
-- This is a draft, not a final plan. Present it as "here's a starting point"
+- This is a draft, not a final plan. Present it as "here's a starting point for your thinking"
 - Be honest about what didn't work. Don't spin misses
 - Connect priorities to evidence (metrics, customer feedback, competitive moves)
 - If data for the quarter is incomplete, say so and work with what's available
+- Create the `your output folder/` directory if it doesn't exist
 
 ## Change Log
 

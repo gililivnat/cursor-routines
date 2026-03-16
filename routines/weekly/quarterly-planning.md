@@ -16,6 +16,7 @@ Supports quarterly planning by:
 - Summarising key themes from weekly summaries across the quarter
 - Identifying what worked, what didn't, and what to carry forward
 - Drafting initial priorities and themes for the next quarter
+- Referencing `your product strategy documentation` for strategic context
 
 This is more of a thinking aid than an automated task. The skill provides structure and prompts to guide the planning process.
 

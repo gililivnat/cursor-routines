@@ -38,7 +38,6 @@ Query for meetings from today. Include summaries and action items.
 ### Step 2 -- Synthesise output
 
 For each meeting, extract:
-- Participants, date, and title
 - Summary of what was discussed
 - Key decisions made
 - Action items with owners
@@ -104,3 +103,4 @@ If there were multiple meetings:
 | Date | Change |
 |------|--------|
 | 13 Mar 2026 | Initial version |
+| 16 Mar 2026 | Restructured as generic workflow skill |
