@@ -1,6 +1,6 @@
 ---
 name: review-daily-metrics
-description: Queries main product metrics and surfaces highlights, anomalies, and trends. Use as part of the daily start-of-day routine.
+description: Queries main monday product metrics via data warehouse MCP and surfaces highlights, anomalies, and trends. Use as part of the daily start-of-day routine.
 ---
 
 # Review Daily Metrics
@@ -20,7 +20,7 @@ This skill is called by the start-of-day routine (step 4). It can also be run in
 
 | Tool | Purpose |
 |------|---------|
-| SQL query tool | Run SQL against Snowflake for specific metrics |
+| SQL query tool | Run SQL against your data warehouse for specific metrics |
 | Data exploration tool | AI agent for open-ended data exploration |
 | Schema explorer | Explore table schemas and column descriptions |
 
@@ -30,12 +30,12 @@ These are the default daily metrics. This can be refined this list over time.
 
 | Metric | What it measures | Why it matters |
 |--------|-----------------|----------------|
+| ARR | Total annual recurring revenue for marketing product | Revenue health |
+| Paying accounts | Count of paying marketing accounts | Growth indicator |
+| MAPP | Monthly active paying users (from FACT_ACCOUNTS_PRODUCTS_METRICS_DAILY) | Paying user engagement |
+| Product sent (last 24h) | Volume of campaigns sent | Core product usage |
 | DAU | Daily active users | Product health pulse |
-| Core actions (last 24h) | Volume of primary product actions | Core product usage |
-| Creation rate | New items/objects created | Engagement signal |
-| New signups (last 24h) | New accounts entering the product | Growth indicator |
-| Activation rate | Signup to first meaningful action | Onboarding health |
-| Conversion to paid | Trial to paid ratio | Revenue pipeline |
+| New signups (last 24h) | New accounts entering campaigns | Growth indicator |
 
 **Note:** The specific SQL queries depend on table schemas documented in `your data guide`. Always read the data guide before writing queries to use correct table names, join keys, and known gotchas.
 
@@ -139,4 +139,4 @@ If any metric can't be queried (missing table, data gap), note it with: `<p clas
 
 | Date | Change |
 |------|--------|
-| 13 Mar 2026 | Initial version. Customise the Metrics to Track table for your product. |
+| 13 Mar 2026 | Initial version. Default metrics: DAU, campaigns sent, new signups, activation rate, conversion to paid. Refine as needed. |

@@ -44,7 +44,19 @@ Query main product metrics and surface highlights, anomalies, and trends.
 
 ---
 
-### 5. Review Upcoming Meetings (placeholder)
+### 5. Weekly Competitor Intel (Monday only)
+
+**Skill:** `skills/weekly-competitor-intel/SKILL.md`
+**State field:** `daily_start.weekly_competitor_intel`
+**Condition:** Only runs on Mondays. On other days, treat as already complete (skip).
+
+Gathers competitive intelligence from Reddit marketing forums, competitor blogs/changelogs, the `campaign-competitor-updates` Slack channel, and internal Slack discussions. Appends a "Competitor Intel" section to the morning briefing HTML. Saves a full markdown report to `your output folder/`.
+
+**Depends on:** Steps 1-4 must be complete first (the morning briefing HTML must exist before appending).
+
+---
+
+### 6. Review Upcoming Meetings (placeholder)
 
 **Skill:** `skills/review-upcoming-meetings/SKILL.md`
 **State field:** `daily_start.review_upcoming_meetings` (commented out in state.md)
@@ -54,7 +66,7 @@ When activated: review today's calendar, highlight important meetings, prepare 3
 
 ---
 
-### 6. Review Gmail (placeholder)
+### 7. Review Gmail (placeholder)
 
 **Skill:** `skills/review-gmail/SKILL.md`
 **State field:** `daily_start.review_gmail` (commented out in state.md)

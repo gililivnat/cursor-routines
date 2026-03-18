@@ -13,6 +13,9 @@ This skill is called by the start-of-day routine (step 2). It can also be run in
 
 - Search term: "CHANNEL_KEYWORD"
 - Time window: last 24 hours from now
+- Must-check channels (always include even if the search misses them):
+  - `ask-product`
+  - `product-churns`
 
 ## Tools
 
@@ -37,6 +40,18 @@ Arguments:
 ```
 
 Note all channel IDs and names returned.
+
+**Must-check fallback:** If any of the must-check channels (`ask-product`, `product-churns`) are missing from the search results, search for them individually:
+
+```
+Tool: slack_search_channels
+Arguments:
+  query: "[channel-name]"
+  channel_types: "public_channel,private_channel"
+  include_archived: false
+```
+
+Merge the results. If a must-check channel still cannot be found, flag it explicitly in the output as missing rather than silently skipping it.
 
 ### Step 2 -- Read recent messages
 
@@ -146,5 +161,6 @@ If no product channels are found, flag this as unexpected and move on.
 
 | Date | Change |
 |------|--------|
+| 16 Mar 2026 | Added must-check channels list (ask-product, product-churns) with fallback search. Channels missing from results are now flagged explicitly |
 | 16 Mar 2026 | Added Step 3b: check threads the user is part of for replies needing response |
 | 13 Mar 2026 | Initial version |

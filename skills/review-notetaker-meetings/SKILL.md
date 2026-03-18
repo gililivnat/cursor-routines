@@ -1,106 +1,225 @@
 ---
 name: review-notetaker-meetings
-description: Reviews AI notetaker meetings for the day. Summarises discussions, extracts action items, flags unresolved topics. Use as part of the daily end-of-day routine.
+description: Guide for using the AI notetaker via MCP. Covers what the tool can do, how to call it, and how to synthesise meeting data into actionable outputs.
 ---
 
-# Review Notetaker Meetings
+# Using the Monday AI Notetaker
 
-## When to Use
+## What It Is
 
-This skill is called by the end-of-day routine (step 2). It can also be run independently when asked to review meeting notes.
+The AI notetaker records meetings, generates transcripts, and extracts summaries, topics, and action items automatically. Access it via the your meeting retrieval tool tool on the your meeting notetaker MCP server.
 
-## Tools
+## What You Can Do
 
-### Meeting Notetaker MCP
+| Capability | How |
+|------------|-----|
+| List recent meetings | Call with default params |
+| Search for a meeting | Use `search` (matches title, participant name, or email) |
+| Fetch specific meetings | Use `ids` with one or more meeting IDs |
+| Get AI summaries | Set `include_summary: true` |
+| Get discussion topics | Set `include_topics: true` |
+| Get action items | Set `include_action_items: true` |
+| Get full transcript | Set `include_transcript: true` (large payload, use sparingly) |
+| Filter by access level | Set `access` to `OWN`, `SHARED_WITH_ME`, `SHARED_WITH_ACCOUNT`, or `ALL` |
+| Paginate results | Use `limit` (1-100, default 25) and `cursor` for next pages |
 
-This skill works with any AI notetaker that provides an MCP interface (e.g. monday AI notetaker, Fireflies, Otter). Adapt tool names to your setup.
+## How to Call It
 
-| Tool | Purpose |
-|------|---------|
-| Meeting retrieval tool | List and retrieve recent meetings |
-| Meeting search tool | Search by title, participant, or date |
+Use `CallMcpTool` with server your meeting notetaker MCP and tool your meeting retrieval tool.
 
-### Typical Parameters
+**Minimal call (list own meetings):**
 
-| Parameter | Purpose |
-|-----------|---------|
-| `include_summary` | Include AI-generated summary |
-| `include_topics` | Include discussion topics |
-| `include_action_items` | Include extracted action items |
-| `include_transcript` | Include full transcript (use sparingly, large payload) |
+```json
+{
+  "server": "user-monday-api-mcp",
+  "toolName": "get_notetaker_meetings",
+  "arguments": {}
+}
+```
 
-## Workflow
+**Typical call (recent meetings with summaries and action items):**
 
-### Step 1 -- Retrieve today's meetings
+```json
+{
+  "server": "user-monday-api-mcp",
+  "toolName": "get_notetaker_meetings",
+  "arguments": {
+    "access": "ALL",
+    "limit": 10,
+    "include_summary": true,
+    "include_action_items": true,
+    "include_topics": true
+  }
+}
+```
 
-Query for meetings from today. Include summaries and action items.
+**Search for a specific meeting:**
 
-### Step 2 -- Synthesise output
+```json
+{
+  "server": "user-monday-api-mcp",
+  "toolName": "get_notetaker_meetings",
+  "arguments": {
+    "search": "sprint planning",
+    "include_summary": true,
+    "include_action_items": true
+  }
+}
+```
 
-For each meeting, extract:
-- Summary of what was discussed
-- Key decisions made
+**Fetch by ID (for follow-ups or deep-dives):**
+
+```json
+{
+  "server": "user-monday-api-mcp",
+  "toolName": "get_notetaker_meetings",
+  "arguments": {
+    "ids": ["meeting-id-here"],
+    "include_summary": true,
+    "include_topics": true,
+    "include_action_items": true,
+    "include_transcript": true
+  }
+}
+```
+
+## Parameter Reference
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ids` | string[] | — | Fetch specific meetings by ID |
+| `access` | enum | `OWN` | `OWN`, `SHARED_WITH_ME`, `SHARED_WITH_ACCOUNT`, `ALL` |
+| `limit` | number | 25 | Results per page (1-100) |
+| `cursor` | string | — | Pagination cursor from previous response |
+| `search` | string | — | Search by title, participant name, or email |
+| `include_summary` | boolean | false | Include AI-generated summary |
+| `include_topics` | boolean | false | Include discussion topics |
+| `include_action_items` | boolean | false | Include extracted action items |
+| `include_transcript` | boolean | false | Include full transcript (large) |
+
+## Synthesising Output
+
+When presenting meeting data to the user:
+
+**For multiple meetings**, extract and consolidate:
+- Key decisions across meetings
+- Action items grouped by owner
+- Recurring themes or topics
+- Unresolved items needing follow-up
+
+**For a single meeting**, present:
+- Participants, date, and title
+- Summary
+- Topics discussed with key points
 - Action items with owners
-- Open questions or unresolved topics
+- Open questions
 
-### Step 3 -- Consolidate across meetings
+Always draft Slack messages first (never send directly). Save substantial digests to `your output folder/meeting-digest-YYYY-MM-DD.md`.
 
-If there were multiple meetings:
-- Group action items by owner
-- Identify recurring themes or topics
-- Flag unresolved items needing follow-up
+## Output Formats
 
-### Step 4 -- Produce summary
+Generate HTML content using the routine template at `skills/system/routine-html-template.md`. Read that file for the full CSS and component patterns.
 
-## Output
+**If running as part of end-of-day routine:** append to the EOD summary HTML file.
+**If running standalone:** save to `your output folder/meeting-digest-YYYY-MM-DD.html` and open it.
 
-### Single meeting
+### Multi-meeting digest HTML
 
-```
-**[Meeting title]** | [date]
-**Participants:** [list]
+```html
+<div class="section">
+  <div class="section-title">Meeting Digest · [N] meetings · [date range]</div>
 
-**Summary:** [AI summary]
+  <div class="card highlight">
+    <div class="card-label highlight">[Meeting title] · [date]</div>
+    <div class="card-body">[1-2 sentence summary]</div>
+    <div class="card-meta">Decisions: [if any]</div>
+  </div>
+  <!-- repeat per meeting -->
+</div>
 
-**Decisions:**
-- [Decision made]
+<div class="section">
+  <div class="section-title">Action Items</div>
+  <div class="task-row">
+    <div class="task-content"><span class="person">[Owner]</span>: [action] <span class="quiet">(from: [meeting])</span></div>
+    <button class="btn-todoist" onclick="this.classList.toggle('added'); this.innerHTML = this.classList.contains('added') ? '<span class=\'icon\'>✓</span> Added' : '<span class=\'icon\'>+</span> Add to your task manager'">
+      <span class="icon">+</span> Add to your task manager
+    </button>
+  </div>
+</div>
 
-**Action items:**
-- [Owner]: [action]
-
-**Open questions:**
-- [Unresolved item]
-```
-
-### Multiple meetings
-
-```
-**Meeting Digest** | [date]
-**Meetings reviewed:** [N]
-
-**[Meeting title]** | [participants]
-- Summary: [1-2 sentences]
-- Action items: [Owner]: [action]
-
----
-
-**Consolidated action items:**
-- [Owner]: [action] (from: [meeting title])
-
-**Themes across meetings:**
-- [Pattern or recurring topic]
+<div class="section">
+  <div class="section-title">Themes Across Meetings</div>
+  <ul class="item-list">
+    <li>[Pattern or recurring topic]</li>
+  </ul>
+</div>
 ```
 
-## Guidelines
+### Single meeting HTML
 
-- Only include transcript content if specifically asked (transcripts are large)
-- Flag if any meetings couldn't be retrieved or if data seems incomplete
-- Be concise: summaries should be scannable
-- Draft outputs for review before sending anywhere
+```html
+<div class="section">
+  <div class="section-title">[Meeting title] · [date]</div>
+  <p class="quiet">Participants: [list]</p>
+
+  <div class="card highlight">
+    <div class="card-title">Summary</div>
+    <div class="card-body">[AI summary]</div>
+  </div>
+
+  <div class="section-title" style="margin-top:20px">Topics</div>
+  <ol class="priority-list">
+    <li>
+      <div class="card-title">[Topic]</div>
+      <div class="card-body">[Key points]</div>
+    </li>
+  </ol>
+
+  <div class="section-title" style="margin-top:20px">Action Items</div>
+  <div class="task-row">
+    <div class="task-content"><span class="person">[Owner]</span>: [action]</div>
+    <button class="btn-todoist" onclick="this.classList.toggle('added'); this.innerHTML = this.classList.contains('added') ? '<span class=\'icon\'>✓</span> Added' : '<span class=\'icon\'>+</span> Add to your task manager'">
+      <span class="icon">+</span> Add to your task manager
+    </button>
+  </div>
+
+  <div class="section-title" style="margin-top:20px">Open Questions</div>
+  <ul class="item-list">
+    <li>[Unresolved item]</li>
+  </ul>
+</div>
+```
+
+## Checking for Tool Updates
+
+The notetaker MCP tool may gain new parameters or capabilities over time. To check for changes:
+
+1. Read the tool descriptor at:
+   `/Users/giladli/.cursor/projects/Users-giladli-Development-the user-Workspace/mcps/user-monday-api-mcp/tools/get_notetaker_meetings.json`
+
+2. Compare the descriptor's `properties` against the Parameter Reference table above.
+
+3. If new parameters exist or descriptions have changed:
+   - Update the Parameter Reference table in this file
+   - Update the "What You Can Do" table if new capabilities were added
+   - Update the example calls if relevant
+   - Note what changed at the bottom of this file under Change Log
+
+4. If parameters have been removed or renamed, update all references accordingly.
+
+**When to check:** At the start of any session where this skill is used. A quick read of the descriptor file is cheap and ensures the skill stays current.
 
 ## Change Log
 
 | Date | Change |
 |------|--------|
-| 13 Mar 2026 | Initial version |
-| 16 Mar 2026 | Restructured as generic workflow skill |
+| 12 Mar 2026 | Initial version. Documented all parameters from MCP tool descriptor |
+
+## Guidelines
+
+- Write in British English
+- Never use em dashes
+- Be concise: summaries should be scannable
+- Only include transcript content if the user specifically asks (transcripts are large)
+- Flag if any meetings couldn't be retrieved or if data seems incomplete
+any written output

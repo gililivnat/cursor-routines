@@ -29,7 +29,10 @@ Compare `date` to today's date.
 4. Calculate the Monday of the current week. If `weekly.week_of` < this Monday:
    - Set `weekly.week_of` to this Monday
    - Reset all `weekly` fields to `false` and `weekly.flag` to `0`
-5. Write the updated frontmatter back to `state.md`
+5. If `monday_tasks.week_of` < this Monday:
+   - Set `monday_tasks.week_of` to this Monday
+   - Reset all `monday_tasks` fields to `false` and `monday_tasks.flag` to `0`
+6. Write the updated frontmatter back to `state.md`
 
 **If `date` == today:** proceed to Step 3 without resetting.
 
@@ -37,7 +40,7 @@ Compare `date` to today's date.
 
 Check each group flag:
 
-- **`daily_start.flag == 0`:** morning routines have not completed. Read `routines/daily/start-of-day.md` and run any skills whose state field is still `false`.
+- **`daily_start.flag == 0`:** morning routines have not completed. Read `routines/daily/start-of-day.md` and run any skills whose state field is still `false`. **Conditional skills:** `weekly_competitor_intel` only runs on Mondays. On other days, treat it as already complete (set to `true` and skip).
 - **`daily_end.flag == 0`:** end-of-day routines have not completed. Read `routines/daily/end-of-day.md` and run any skills whose state field is still `false`. Note: only run EOD routines if the user explicitly asks to summarise the day, or if it's clearly the end of the working day.
 - **`weekly.flag == 0`:** weekly routines have not completed. Check the day:
   - **Monday:** run `weekly/week-planning.md`
@@ -47,10 +50,34 @@ Check each group flag:
 
 **If all flags == 1:** all routines are done for today. Proceed to Step 4 without running routines.
 
-### Step 4 -- Check scheduled tasks
+### Step 4 -- Check and track Monday scheduled tasks
 
-After handling routines, read `your scheduled tasks file` and check for:
-- **Recurring weekly (Monday):** flag if today is Monday
+Monday recurring tasks are tracked in `state.md` under `monday_tasks`. This works like other routine groups:
+
+**If today is Monday and `monday_tasks.flag == 0`:**
+
+1. Check `monday_tasks.week_of`. If it's before this Monday, reset all fields to `false` and update `week_of`.
+2. Present the incomplete Monday tasks to the user and ask which to run.
+3. After each task completes, set its field to `true`. When all are `true`, set `monday_tasks.flag` to `1`.
+
+| State field | Task | Owner | Reference |
+|-------------|------|-------|-----------|
+| `review_ask_campaigns` | Review Ask-Product channel (7-day) | Product Ops agent | `Agents/product-ops-agent.md` |
+| `review_campaigns_churns` | Review Product Churns channel (7-day) | Product Ops agent | `Agents/product-ops-agent.md` |
+| `sync_external_skills` | Sync external skills repos | Master agent | `your scheduled tasks file` |
+| `check_google_workspace_mcp` | Check for Google Workspace MCP | Master agent | `your scheduled tasks file` |
+
+**Follow-up actions for specific tasks:**
+
+| Task | If result contains... | Follow-up |
+|------|-----------------------|-----------|
+| `review_campaigns_churns` | Any churned accounts | Create a task manager task for today: "Send personalised churn feedback emails to [list of account names]". Use the `write-churn-feedback-email` skill (`~/.cursor/skills/write-churn-feedback-email/SKILL.md`) to draft each email. |
+
+**If today is not Monday:** skip `monday_tasks` entirely.
+
+### Step 4b -- Check other scheduled tasks
+
+After handling Monday tasks, read `your scheduled tasks file` and check for:
 - **Recurring weekly (Friday):** flag if today is Friday
 - **One-off tasks:** flag if today is on or after the due date
 
@@ -91,6 +118,7 @@ All routine steps are backed by skills in `skills/`. The agent reads the SKILL.m
 | 2 | Review Product Channels | `skills/review-campaigns-channels/SKILL.md` | `review_campaigns_channels` |
 | 3 | Summarise Slack + Suggest Tasks | `skills/summarise-slack-and-suggest-tasks/SKILL.md` | `summarise_slack_suggest_tasks` |
 | 4 | Review Daily Metrics | `skills/review-daily-metrics/SKILL.md` | `review_daily_metrics` |
+| 5 | Weekly Competitor Intel | `skills/weekly-competitor-intel/SKILL.md` | `weekly_competitor_intel` (Monday only) |
 | -- | Review Upcoming Meetings | `skills/review-upcoming-meetings/SKILL.md` | `review_upcoming_meetings` (placeholder) |
 | -- | Review Gmail | `skills/review-gmail/SKILL.md` | `review_gmail` (placeholder) |
 
