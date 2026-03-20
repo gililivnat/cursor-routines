@@ -31,7 +31,7 @@ Use `CallMcpTool` with server your meeting notetaker MCP and tool your meeting r
 
 ```json
 {
-  "server": "user-monday-api-mcp",
+  "server": "your-notetaker-mcp",
   "toolName": "get_notetaker_meetings",
   "arguments": {}
 }
@@ -41,7 +41,7 @@ Use `CallMcpTool` with server your meeting notetaker MCP and tool your meeting r
 
 ```json
 {
-  "server": "user-monday-api-mcp",
+  "server": "your-notetaker-mcp",
   "toolName": "get_notetaker_meetings",
   "arguments": {
     "access": "ALL",
@@ -57,7 +57,7 @@ Use `CallMcpTool` with server your meeting notetaker MCP and tool your meeting r
 
 ```json
 {
-  "server": "user-monday-api-mcp",
+  "server": "your-notetaker-mcp",
   "toolName": "get_notetaker_meetings",
   "arguments": {
     "search": "sprint planning",
@@ -71,7 +71,7 @@ Use `CallMcpTool` with server your meeting notetaker MCP and tool your meeting r
 
 ```json
 {
-  "server": "user-monday-api-mcp",
+  "server": "your-notetaker-mcp",
   "toolName": "get_notetaker_meetings",
   "arguments": {
     "ids": ["meeting-id-here"],
@@ -195,7 +195,7 @@ Generate HTML content using the routine template at `skills/system/routine-html-
 The notetaker MCP tool may gain new parameters or capabilities over time. To check for changes:
 
 1. Read the tool descriptor at:
-   `/Users/giladli/.cursor/projects/Users-giladli-Development-the user-Workspace/mcps/user-monday-api-mcp/tools/get_notetaker_meetings.json`
+   `[your-workspace-path] user-Workspace/mcps/user-monday-api-mcp/tools/get_notetaker_meetings.json`
 
 2. Compare the descriptor's `properties` against the Parameter Reference table above.
 

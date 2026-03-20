@@ -1,6 +1,22 @@
 # Routines Orchestrator
 
-This is the master control file for the user's daily and weekly routines. The Cursor rule reads this file at the start of every conversation and executes the flag logic below.
+This is the master control file for the user's daily and weekly routines. Routines are **opt-in** and only run when the user triggers them via slash commands.
+
+---
+
+## Slash Commands
+
+| Command | Routine | Reference |
+|---------|---------|-----------|
+| `/goodmorning` | Start of day | `daily/start-of-day.md` |
+| `/goodnight` | End of day | `daily/end-of-day.md` |
+| `/planweek` | Week planning | `weekly/week-planning.md` |
+| `/weekreview` | Week summary | `weekly/week-summary.md` |
+| `/planquarter` | Quarterly planning | `weekly/quarterly-planning.md` |
+| `/mondaytasks` | Monday recurring tasks | Step 4 below |
+| `/checktasks` | Check scheduled tasks | Step 4b below |
+| `/voc` | Voice of the Customer | `skills/voice-of-the-customer/SKILL.md` |
+| `/routines` | Show all commands | Display command list |
 
 ---
 
@@ -10,9 +26,9 @@ This is the master control file for the user's daily and weekly routines. The Cu
 
 ---
 
-## Flag Logic
+## Execution Logic
 
-At the start of every conversation, execute these steps in order:
+When a slash command is triggered, execute these steps in order:
 
 ### Step 1 -- Read state
 
@@ -36,19 +52,19 @@ Compare `date` to today's date.
 
 **If `date` == today:** proceed to Step 3 without resetting.
 
-### Step 3 -- Determine what to run
+### Step 3 -- Run the requested routine
 
-Check each group flag:
+Based on the slash command, run the corresponding routine:
 
-- **`daily_start.flag == 0`:** morning routines have not completed. Read `routines/daily/start-of-day.md` and run any skills whose state field is still `false`. **Conditional skills:** `weekly_competitor_intel` only runs on Mondays. On other days, treat it as already complete (set to `true` and skip).
-- **`daily_end.flag == 0`:** end-of-day routines have not completed. Read `routines/daily/end-of-day.md` and run any skills whose state field is still `false`. Note: only run EOD routines if the user explicitly asks to summarise the day, or if it's clearly the end of the working day.
-- **`weekly.flag == 0`:** weekly routines have not completed. Check the day:
-  - **Monday:** run `weekly/week-planning.md`
-  - **Friday:** run `weekly/week-summary.md`
-  - **Last month of quarter:** flag `weekly/quarterly-planning.md` as available
-  - Run any weekly skills whose state field is still `false` and whose cadence matches today.
-
-**If all flags == 1:** all routines are done for today. Proceed to Step 4 without running routines.
+- **`/goodmorning`** → Read `routines/daily/start-of-day.md` and run any skills whose state field is still `false`. **Conditional skills:** `weekly_competitor_intel` only runs on Mondays. On other days, treat it as already complete (set to `true` and skip). Gmail (step 6) appends to the morning briefing HTML after the main content. Calendar (step 7) appends today's meetings to the morning briefing HTML and flags any customer meetings, offering to run `prepare-customer-interview` for those accounts. If `daily_start.flag == 1`, tell the user morning routines are already done for today.
+- **`/goodnight`** → Read `routines/daily/end-of-day.md` and run any skills whose state field is still `false`. Gmail EOD (step 3) appends email highlights to the EOD summary HTML. If `daily_end.flag == 1`, tell the user end-of-day routines are already done.
+- **`/planweek`** → Run `weekly/week-planning.md`. If `weekly.plan_week == true`, tell the user week planning is already done this week.
+- **`/weekreview`** → Run `weekly/week-summary.md`. If `weekly.summarise_week == true`, tell the user week summary is already done this week.
+- **`/planquarter`** → Run `weekly/quarterly-planning.md`. If `weekly.plan_quarter == true`, tell the user quarterly planning is already done.
+- **`/mondaytasks`** → Jump to Step 4 (Monday scheduled tasks).
+- **`/checktasks`** → Jump to Step 4b (check scheduled tasks).
+- **`/voc`** → Read and execute `skills/voice-of-the-customer/SKILL.md`.
+- **`/routines`** → Display the list of all available slash commands and descriptions.
 
 ### Step 4 -- Check and track Monday scheduled tasks
 
@@ -65,7 +81,6 @@ Monday recurring tasks are tracked in `state.md` under `monday_tasks`. This work
 | `review_ask_campaigns` | Review Ask-Product channel (7-day) | Product Ops agent | `Agents/product-ops-agent.md` |
 | `review_campaigns_churns` | Review Product Churns channel (7-day) | Product Ops agent | `Agents/product-ops-agent.md` |
 | `sync_external_skills` | Sync external skills repos | Master agent | `your scheduled tasks file` |
-| `check_google_workspace_mcp` | Check for Google Workspace MCP | Master agent | `your scheduled tasks file` |
 
 **Follow-up actions for specific tasks:**
 
@@ -119,8 +134,8 @@ All routine steps are backed by skills in `skills/`. The agent reads the SKILL.m
 | 3 | Summarise Slack + Suggest Tasks | `skills/summarise-slack-and-suggest-tasks/SKILL.md` | `summarise_slack_suggest_tasks` |
 | 4 | Review Daily Metrics | `skills/review-daily-metrics/SKILL.md` | `review_daily_metrics` |
 | 5 | Weekly Competitor Intel | `skills/weekly-competitor-intel/SKILL.md` | `weekly_competitor_intel` (Monday only) |
-| -- | Review Upcoming Meetings | `skills/review-upcoming-meetings/SKILL.md` | `review_upcoming_meetings` (placeholder) |
-| -- | Review Gmail | `skills/review-gmail/SKILL.md` | `review_gmail` (placeholder) |
+| 6 | Review Gmail | `skills/review-gmail/SKILL.md` | `review_gmail` |
+| 7 | Review Upcoming Meetings | `skills/review-upcoming-meetings/SKILL.md` | `review_upcoming_meetings` |
 
 ### Daily End Skills
 
@@ -128,6 +143,7 @@ All routine steps are backed by skills in `skills/`. The agent reads the SKILL.m
 |-------|-------|------|-------------|
 | 1 | Summarise Product Day | `skills/summarise-campaigns-day/SKILL.md` | `summarise_campaigns_day` |
 | 2 | Review Notetaker Meetings | `skills/review-notetaker-meetings/SKILL.md` | `review_notetaker_meetings` |
+| 3 | Review Gmail (EOD) | `skills/review-gmail/SKILL.md` | `review_gmail_eod` |
 
 ### Weekly Skills
 
@@ -141,28 +157,47 @@ All routine steps are backed by skills in `skills/`. The agent reads the SKILL.m
 
 ## Presenting Routines to the user
 
-When routines are due, present them as a brief summary:
+When a slash command is triggered and there are steps to run, present them briefly:
 
 ```
-Routines due this session:
-
-**Start of Day** (4 steps remaining)
+Running start of day (6 steps):
 1. Review Slack DMs
 2. Review Product channels
 3. Summarise Slack + suggest tasks
 4. Review daily metrics
-
-Shall I run through them now?
+5. Review Gmail
+6. Review upcoming meetings
 ```
 
-Wait for the user's confirmation before executing. If he says yes, run each skill in order, updating `state.md` after each one completes.
+Then run each skill in order, updating `state.md` after each one completes.
+
+---
+
+## Showing All Commands (`/routines`)
+
+When the user types `/routines`, display:
+
+```
+Available routines:
+
+/goodmorning — Start of day (Slack DMs, Product channels, summary + tasks, metrics, competitor intel on Mondays, Gmail, calendar + customer prep)
+/goodnight — End of day (summarise campaigns day, review notetaker meetings, Gmail highlights)
+/planweek — Week planning (priorities, tasks, upcoming meetings)
+/weekreview — Week summary (consolidate week's activity, metrics, meetings)
+/planquarter — Quarterly planning (review quarter, draft next quarter priorities)
+/mondaytasks — Monday recurring tasks (ask-product, churns, sync skills, check Google MCP)
+/checktasks — Check for due or overdue scheduled tasks
+/voc — Voice of the Customer report (6-source customer insights)
+/routines — Show this list
+```
 
 ---
 
 ## Important Rules
 
-- **Never skip the state check.** Always read `state.md` first.
-- **Never run EOD routines in the morning** unless the user explicitly asks.
+- **Routines are opt-in only.** Never run routines automatically. Only run when a slash command is triggered.
+- **Never skip the state check.** Always read `state.md` first when a routine is triggered.
 - **Always update state.md** after each skill completes, not just at the end.
 - **Commented-out fields are inactive.** Do not run skills for commented fields. When a new MCP is connected, uncomment the field to activate.
 - **Scheduled tasks in `your scheduled tasks file`** are checked separately and are not part of the flag system. They follow their own cadence/due-date logic.
+- **If no slash command is detected**, do not check routines, do not read state.md, and do not mention routines.

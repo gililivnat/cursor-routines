@@ -6,13 +6,14 @@ daily_start:
   review_campaigns_channels: false
   summarise_slack_suggest_tasks: false
   review_daily_metrics: false
-  weekly_competitor_intel: true        # Monday only -- skipped (Wednesday)
-  # review_upcoming_meetings: false   -- enable when Calendar MCP is connected
-  # review_gmail: false               -- enable when Gmail MCP is connected
+  weekly_competitor_intel: true        # Monday only -- skipped (Friday)
+  review_gmail: false
+  review_upcoming_meetings: false
 daily_end:
   flag: 0
   summarise_campaigns_day: false
   review_notetaker_meetings: false
+  review_gmail_eod: false
 weekly:
   week_of: "2026-03-16"
   flag: 0
@@ -25,7 +26,6 @@ monday_tasks:
   review_ask_campaigns: false
   review_campaigns_churns: false
   sync_external_skills: false
-  check_google_workspace_mcp: false
 ---
 
 # Routine State

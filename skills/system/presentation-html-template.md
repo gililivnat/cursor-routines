@@ -19,7 +19,7 @@ Each presentation lives in its own folder:
 ## Opening the File
 
 ```bash
-open /Users/giladli/Development/the user-Workspace/Output/presentations/YYYY-MM-DD-topic-name/index.html
+open [your-workspace-path] user-Workspace/Output/presentations/YYYY-MM-DD-topic-name/index.html
 ```
 
 ## Base HTML Structure

@@ -14,6 +14,7 @@ This skill is called by the weekly routine on **Monday**. It can also be run ind
 - Last week's summary from `your output folder/` (for carry-overs)
 - Scheduled tasks due this week from `your scheduled tasks file`
 - Product strategy context from `your product strategy documentation`
+- This week's calendar events (for meeting-aware planning and customer prep)
 
 ## Tools
 
@@ -22,6 +23,12 @@ This skill is called by the weekly routine on **Monday**. It can also be run ind
 | Tool | Purpose |
 |------|---------|
 | `slack_search_public` | Check for any weekend messages or Monday-morning threads |
+
+### Google Workspace MCP
+
+| Tool | Purpose |
+|------|---------|
+| Calendar list events tool | List this week's calendar events with attendees and details |
 
 ### Meeting Notetaker MCP
 
@@ -45,11 +52,40 @@ Read `your scheduled tasks file`. Identify:
 - Recurring tasks that run this week (Monday tasks, Friday tasks)
 - Overdue tasks that haven't been completed
 
-### Step 3 -- Scan for Monday context
+### Step 3 -- Scan the week's calendar
+
+Query the full week's calendar using Google Workspace MCP:
+
+```json
+{
+  "server": "your-google-workspace-mcp",
+  "toolName": "calendar_listEvents",
+  "arguments": {
+    "calendarId": "primary",
+    "timeMin": "YYYY-MM-DDT00:00:00Z",
+    "timeMax": "YYYY-MM-DDT23:59:59Z"
+  }
+}
+```
+
+Use this Monday as `timeMin` and Friday as `timeMax` (or Sunday if the user prefers full-week visibility).
+
+From the results:
+- Count total meetings and hours booked per day
+- Identify the busiest and quietest days
+- Flag days with back-to-back meetings (limited focus time)
+- **Detect customer meetings:** any meeting where at least one attendee has a non-internal email domain (excluding tool domains like `google.com`, `zoom.us`, `calendly.com`, `microsoft.com`)
+
+For each customer meeting found:
+1. Extract the external attendee's company (from domain or meeting title)
+2. Note the day and time
+3. **Offer to run `prepare-customer-interview`** (`skills/prepare-customer-interview/SKILL.md`) for each customer
+
+### Step 4 -- Scan for Monday context
 
 Check Slack for any weekend activity or early Monday threads that set the tone for the week.
 
-### Step 4 -- Draft the weekly plan
+### Step 5 -- Draft the weekly plan
 
 Produce a short, prioritised focus list.
 
@@ -112,10 +148,38 @@ Generate an HTML file using the routine template at `skills/system/routine-html-
 </div>
 
 <div class="section">
-  <div class="section-title">Key Meetings</div>
-  <ul class="item-list">
-    <li><strong>[Meeting]</strong> · [Day, time if known]</li>
-  </ul>
+  <div class="section-title">This Week's Calendar</div>
+  <div class="subtitle" style="margin-bottom: 12px">[N] meetings · [N] hours booked · Busiest day: [day]</div>
+
+  <!-- Customer meetings get urgent cards with prep offer -->
+  <div class="card urgent">
+    <div class="card-label urgent">Customer meeting</div>
+    <div class="card-title">[Day, time] -- [Meeting title]</div>
+    <div class="card-body">With <span class="person">[External attendee]</span> ([Company]) · [Brief context]</div>
+    <div class="card-meta">
+      <button class="btn-todoist" onclick="this.classList.toggle('added'); this.innerHTML = this.classList.contains('added') ? '<span class=\'icon\'>✓</span> Prep requested' : '<span class=\'icon\'>📋</span> Run customer prep'">
+        <span class="icon">📋</span> Run customer prep
+      </button>
+    </div>
+  </div>
+
+  <!-- Important internal meetings -->
+  <div class="card highlight">
+    <div class="card-title">[Day, time] -- [Meeting title]</div>
+    <div class="card-body">[Brief context or carry-over topic]</div>
+  </div>
+
+  <!-- Day-by-day summary -->
+  <table>
+    <thead><tr><th>Day</th><th>Meetings</th><th>Hours booked</th><th>Focus time</th></tr></thead>
+    <tbody>
+      <tr><td>Monday</td><td>[N]</td><td>[N]h</td><td>[N]h</td></tr>
+      <tr><td>Tuesday</td><td>[N]</td><td>[N]h</td><td>[N]h</td></tr>
+      <tr><td>Wednesday</td><td>[N]</td><td>[N]h</td><td>[N]h</td></tr>
+      <tr><td>Thursday</td><td>[N]</td><td>[N]h</td><td>[N]h</td></tr>
+      <tr><td>Friday</td><td>[N]</td><td>[N]h</td><td>[N]h</td></tr>
+    </tbody>
+  </table>
 </div>
 
 <div class="section">
@@ -137,4 +201,5 @@ Generate an HTML file using the routine template at `skills/system/routine-html-
 
 | Date | Change |
 |------|--------|
+| 20 Mar 2026 | Added Google Calendar scan (Step 3): full week calendar view, day-by-day meeting/focus breakdown, customer meeting detection with prep offer |
 | 13 Mar 2026 | Initial version |

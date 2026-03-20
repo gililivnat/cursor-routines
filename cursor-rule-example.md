@@ -4,26 +4,43 @@ Save this as `.cursor/rules/routines.mdc` in your project (adjust the frontmatte
 
 ```
 ---
-description: At the start of every conversation, run the routines orchestrator to check daily/weekly routines and scheduled tasks
+description: Routines are opt-in via slash commands. Detect slash commands and run the corresponding routine.
 alwaysApply: true
 ---
 
-# Routines & Scheduled Tasks
+# Routines — Opt-In via Slash Commands
 
-At the **start of every conversation**, before doing anything else:
+Routines are **not automatic**. They only run when the user types a slash command.
 
-1. Read `[path-to]/routines/ORCHESTRATOR.md` for the full flag logic and execution rules
+## Slash Commands
+
+| Command | What it does |
+|---------|--------------|
+| `/goodmorning` | Runs the **start-of-day** routine |
+| `/goodnight` | Runs the **end-of-day** routine |
+| `/planweek` | Runs the **week planning** routine |
+| `/weekreview` | Runs the **week summary** routine |
+| `/planquarter` | Runs the **quarterly planning** routine |
+| `/checktasks` | Checks for due or overdue scheduled tasks |
+| `/routines` | Shows a summary of all available slash commands |
+
+## When a Slash Command Is Detected
+
+1. Read `[path-to]/routines/ORCHESTRATOR.md` for the full execution rules
 2. Read `[path-to]/routines/state.md` to check the current state
-3. Execute the flag logic from the orchestrator:
-   - If `date` < today: reset flags, update date, identify due routines
-   - If `date` == today and flags == 1: routines already done, skip
-   - If `date` == today and flags == 0: identify incomplete routine steps
-4. If routines are due, present a brief summary and ask if the user would like to run them
-5. After handling routines, check for any additional scheduled tasks
+3. Execute the date/reset logic from the orchestrator (reset flags if date < today)
+4. Run the routine corresponding to the command
+5. Update `state.md` after each skill completes
 
-Each routine step is a skill. When running a routine, read the skill file and follow its workflow. Update state.md after each skill completes.
+Each routine step is a skill. Read the skill file and follow its workflow.
 
-If no routines or tasks are due, proceed normally without mentioning it.
+## When `/routines` Is Called
+
+Display all available slash commands and their descriptions.
+
+## If No Slash Command Is Detected
+
+Do **not** check routines, do **not** read state.md, do **not** mention routines. Proceed normally.
 ```
 
 Replace `[path-to]` with the actual path to your routines folder in your workspace.

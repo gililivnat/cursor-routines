@@ -56,23 +56,21 @@ Gathers competitive intelligence from Reddit marketing forums, competitor blogs/
 
 ---
 
-### 6. Review Upcoming Meetings (placeholder)
+### 6. Review Gmail
 
-**Skill:** `skills/review-upcoming-meetings/SKILL.md`
-**State field:** `daily_start.review_upcoming_meetings` (commented out in state.md)
-**Status:** Inactive. Requires a Calendar MCP connection.
+**Skill:** `skills/review-gmail/SKILL.md`
+**State field:** `daily_start.review_gmail`
 
-When activated: review today's calendar, highlight important meetings, prepare 3-4 lines of context or talking points for each.
+Scan Gmail inbox for urgent or important emails from the last 24 hours. Append a Gmail section to the morning briefing HTML with direct links to each email.
 
 ---
 
-### 7. Review Gmail (placeholder)
+### 7. Review Upcoming Meetings
 
-**Skill:** `skills/review-gmail/SKILL.md`
-**State field:** `daily_start.review_gmail` (commented out in state.md)
-**Status:** Inactive. Requires a Gmail MCP connection.
+**Skill:** `skills/review-upcoming-meetings/SKILL.md`
+**State field:** `daily_start.review_upcoming_meetings`
 
-When activated: scan inbox for urgent or important emails, summarise what needs attention.
+Review today's calendar using Google Workspace MCP. Highlight important meetings, prepare 3-4 lines of context or talking points for each. Detect customer meetings (external attendees) and offer to run the `prepare-customer-interview` skill for those accounts. Appends a Calendar section to the morning briefing HTML.
 
 ---
 

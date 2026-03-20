@@ -24,6 +24,15 @@ Check the AI notetaker for today's meetings. Summarise what was discussed, extra
 
 ---
 
+### 3. Review Gmail (EOD)
+
+**Skill:** `skills/review-gmail/SKILL.md`
+**State field:** `daily_end.review_gmail_eod`
+
+Review today's important emails. Highlight which are still unanswered and which were handled. Append an "Email Highlights" section to the EOD summary HTML with direct links to each email.
+
+---
+
 ## Completion
 
 When all steps are done, the orchestrator sets `daily_end.flag` to `1` in `state.md`.
