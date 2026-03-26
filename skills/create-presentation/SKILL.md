@@ -110,6 +110,26 @@ For each slide in the outline, specify:
 
 Review the outline with the user in conversation. Iterate until the skeleton is approved.
 
+### Step 3b: Narrative shaping (Storytelling Agent)
+
+Once the outline is approved, invoke the Storytelling agent to shape it into a compelling narrative.
+
+1. Load the `craft-narrative` skill at `skills/craft-narrative/SKILL.md`
+2. Pass the approved outline, audience, goal, and key messages to the skill
+3. The Storytelling agent will:
+   - Choose the best story structure (SCR, What/So What/Now What, Problem/Insight/Solution, etc.)
+   - Define story beats for each slide (opening hook, tension, evidence, resolution)
+   - Recommend data placement (introduce charts when the audience is asking "is this real?")
+   - Write transition logic between slides (the invisible narrative thread)
+   - Draft speaker notes with anchor phrases for key moments
+   - Suggest 2-3 opening hook options
+   - Recommend a closing approach
+   - Flag any content that should be cut or moved to appendix
+4. Review the narrative with the user. Iterate until the story arc feels right
+5. Proceed to Step 4 with the narrative-enriched outline
+
+**Note:** This step is strongly recommended but can be skipped if the user explicitly asks to go straight to creation.
+
 ### Step 4: Creation
 
 Build the presentation as a live interactive HTML deck.
@@ -188,6 +208,8 @@ Prefer: Specific, evidence-backed, understated confidence.
 
 - HTML template: `skills/system/presentation-html-template.md`
 - Routine HTML template (for exec summaries): `skills/system/routine-html-template.md`
+- Storytelling agent: `Agents/storytelling-agent.md`
+- Craft narrative skill: `skills/craft-narrative/SKILL.md`
 - Tone of voice: `your tone of voice guide`
 - Human writing: `~/.cursor/skills/make-human-lite/SKILL.md`
 - Data guide: `your data guide`
@@ -199,3 +221,4 @@ Prefer: Specific, evidence-backed, understated confidence.
 |------|--------|
 | Mar 2026 | Initial version. Basic outline workflow with design system. |
 | 17 Mar 2026 | Major upgrade. Full multi-step workflow: brief, data gathering, outline, interactive HTML creation, sharing via GitHub Pages. Added Chart.js with zoom/pan, SVG diagram generation, speaker notes, element-level animations, exec summary support. |
+| 26 Mar 2026 | Added Step 3b: Storytelling agent integration. After outline approval, the `craft-narrative` skill shapes the outline into a compelling story arc before creation begins. |

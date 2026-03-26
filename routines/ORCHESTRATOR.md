@@ -10,12 +10,13 @@ This is the master control file for the user's daily and weekly routines. Routin
 |---------|---------|-----------|
 | `/goodmorning` | Start of day | `daily/start-of-day.md` |
 | `/goodnight` | End of day | `daily/end-of-day.md` |
-| `/planweek` | Week planning | `weekly/week-planning.md` |
-| `/weekreview` | Week summary | `weekly/week-summary.md` |
+| `/weekreview` | Week summary + week planning | `weekly/week-summary.md` → `weekly/week-planning.md` |
+| `/planweek` | Week planning (standalone) | `weekly/week-planning.md` |
 | `/planquarter` | Quarterly planning | `weekly/quarterly-planning.md` |
 | `/mondaytasks` | Monday recurring tasks | Step 4 below |
 | `/checktasks` | Check scheduled tasks | Step 4b below |
 | `/voc` | Voice of the Customer | `skills/voice-of-the-customer/SKILL.md` |
+| `/biweekly` | Bi-weekly update prep | `biweekly/biweekly-update.md` |
 | `/routines` | Show all commands | Display command list |
 
 ---
@@ -57,13 +58,14 @@ Compare `date` to today's date.
 Based on the slash command, run the corresponding routine:
 
 - **`/goodmorning`** → Read `routines/daily/start-of-day.md` and run any skills whose state field is still `false`. **Conditional skills:** `weekly_competitor_intel` only runs on Mondays. On other days, treat it as already complete (set to `true` and skip). Gmail (step 6) appends to the morning briefing HTML after the main content. Calendar (step 7) appends today's meetings to the morning briefing HTML and flags any customer meetings, offering to run `prepare-customer-interview` for those accounts. If `daily_start.flag == 1`, tell the user morning routines are already done for today.
-- **`/goodnight`** → Read `routines/daily/end-of-day.md` and run any skills whose state field is still `false`. Gmail EOD (step 3) appends email highlights to the EOD summary HTML. If `daily_end.flag == 1`, tell the user end-of-day routines are already done.
-- **`/planweek`** → Run `weekly/week-planning.md`. If `weekly.plan_week == true`, tell the user week planning is already done this week.
-- **`/weekreview`** → Run `weekly/week-summary.md`. If `weekly.summarise_week == true`, tell the user week summary is already done this week.
+- **`/goodnight`** → Read `routines/daily/end-of-day.md` and run any skills whose state field is still `false`. Gmail EOD (step 3) appends email highlights to the EOD summary HTML. task manager review (step 4) appends today's tasks with Postpone and Open in your task manager buttons. If `daily_end.flag == 1`, tell the user end-of-day routines are already done.
+- **`/weekreview`** → Run `weekly/week-summary.md` first. When complete, automatically run `weekly/week-planning.md` for the following week. If `weekly.summarise_week == true` and `weekly.plan_week == true`, tell the user both are already done this week. If only the summary is done, skip to planning. If only planning is done, run the summary first then planning.
+- **`/planweek`** → Run `weekly/week-planning.md` standalone. If `weekly.plan_week == true`, tell the user week planning is already done this week. Use this when planning needs to run outside the Friday review flow.
 - **`/planquarter`** → Run `weekly/quarterly-planning.md`. If `weekly.plan_quarter == true`, tell the user quarterly planning is already done.
 - **`/mondaytasks`** → Jump to Step 4 (Monday scheduled tasks).
 - **`/checktasks`** → Jump to Step 4b (check scheduled tasks).
 - **`/voc`** → Read and execute `skills/voice-of-the-customer/SKILL.md`.
+- **`/biweekly`** → Read `routines/biweekly/biweekly-update.md` and run the skill. If `biweekly.flag == 1`, tell the user the bi-weekly prep has already been run. If he wants to re-run it, reset `biweekly.flag` to `0` and `biweekly.prepare_biweekly_update` to `false`, then run again.
 - **`/routines`** → Display the list of all available slash commands and descriptions.
 
 ### Step 4 -- Check and track Monday scheduled tasks
@@ -116,8 +118,9 @@ These files list which skills to run and in what order. They are lightweight orc
 | Start of Day | `daily/start-of-day.md` | Every morning (first session of the day) |
 | End of Day | `daily/end-of-day.md` | End of working day / when asked |
 | Week Summary | `weekly/week-summary.md` | Friday |
-| Week Planning | `weekly/week-planning.md` | Monday |
+| Week Planning | `weekly/week-planning.md` | Friday (after summary) |
 | Quarterly Planning | `weekly/quarterly-planning.md` | Last month of quarter / on demand |
+| Bi-weekly Update Prep | `biweekly/biweekly-update.md` | Every other week (before Thursday meeting) |
 
 ---
 
@@ -144,14 +147,21 @@ All routine steps are backed by skills in `skills/`. The agent reads the SKILL.m
 | 1 | Summarise Product Day | `skills/summarise-campaigns-day/SKILL.md` | `summarise_campaigns_day` |
 | 2 | Review Notetaker Meetings | `skills/review-notetaker-meetings/SKILL.md` | `review_notetaker_meetings` |
 | 3 | Review Gmail (EOD) | `skills/review-gmail/SKILL.md` | `review_gmail_eod` |
+| 4 | Review task manager Tasks | `skills/review-todoist-tasks/SKILL.md` | `review_todoist_tasks` |
 
 ### Weekly Skills
 
 | Skill | Path | State Field | Cadence |
 |-------|------|-------------|---------|
 | Summarise Week | `skills/summarise-week/SKILL.md` | `summarise_week` | Friday |
-| Plan Week | `skills/plan-week/SKILL.md` | `plan_week` | Monday |
+| Plan Week | `skills/plan-week/SKILL.md` | `plan_week` | Friday (after summary) |
 | Plan Quarter | `skills/plan-quarter/SKILL.md` | `plan_quarter` | Last month of Q |
+
+### Bi-weekly Skills
+
+| Skill | Path | State Field | Cadence |
+|-------|------|-------------|---------|
+| Prepare Bi-weekly Update | `skills/prepare-biweekly-update/SKILL.md` | `prepare_biweekly_update` | Every other week (manual trigger) |
 
 ---
 
@@ -181,13 +191,14 @@ When the user types `/routines`, display:
 Available routines:
 
 /goodmorning — Start of day (Slack DMs, Product channels, summary + tasks, metrics, competitor intel on Mondays, Gmail, calendar + customer prep)
-/goodnight — End of day (summarise campaigns day, review notetaker meetings, Gmail highlights)
-/planweek — Week planning (priorities, tasks, upcoming meetings)
-/weekreview — Week summary (consolidate week's activity, metrics, meetings)
+/goodnight — End of day (summarise campaigns day, review notetaker meetings, Gmail highlights, task manager task review)
+/weekreview — Week summary + week planning (review the week, then plan the next)
+/planweek — Week planning standalone (priorities, tasks, upcoming meetings)
 /planquarter — Quarterly planning (review quarter, draft next quarter priorities)
 /mondaytasks — Monday recurring tasks (ask-product, churns, sync skills, check Google MCP)
 /checktasks — Check for due or overdue scheduled tasks
 /voc — Voice of the Customer report (6-source customer insights)
+/biweekly — Bi-weekly update prep (deck review, metrics snapshot, Slack scan, team prep message)
 /routines — Show this list
 ```
 

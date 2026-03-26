@@ -33,6 +33,15 @@ Review today's important emails. Highlight which are still unanswered and which 
 
 ---
 
+### 4. Review task manager Tasks
+
+**Skill:** `skills/review-todoist-tasks/SKILL.md`
+**State field:** `daily_end.review_todoist_tasks`
+
+Fetch all tasks due today and append a "Today's Tasks" section to the EOD summary HTML. Each task shows a Postpone button (to defer to tomorrow) and an Open in your task manager link. After reviewing, the user can ask the agent to postpone marked tasks.
+
+---
+
 ## Completion
 
 When all steps are done, the orchestrator sets `daily_end.flag` to `1` in `state.md`.

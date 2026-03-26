@@ -24,3 +24,5 @@ Builds on the Product Ops agent's `weekly-product-summary` task but adds a perso
 ## Completion
 
 When done, set `weekly.summarise_week` to `true` in `state.md`.
+
+**Next step:** After the summary completes, the orchestrator automatically runs week planning (`weekly/week-planning.md`) for the following week.

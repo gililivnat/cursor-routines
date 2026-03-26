@@ -1,6 +1,6 @@
 # Week Planning
 
-Run on **Monday** to set priorities and focus areas for the week.
+Run on **Friday** (after the week summary) to set priorities and focus areas for the following week. Can also be run standalone via `/planweek` at any time.
 
 ---
 
