@@ -6,7 +6,7 @@ daily_start:
   review_campaigns_channels: false
   summarise_slack_suggest_tasks: false
   review_daily_metrics: false
-  weekly_competitor_intel: true        # Monday only — skipped (Thursday)
+  weekly_competitor_intel: true        # Monday only — completed
   review_gmail: false
   review_upcoming_meetings: false
 daily_end:
@@ -16,13 +16,13 @@ daily_end:
   review_gmail_eod: false
   review_todoist_tasks: false
 weekly:
-  week_of: "2026-03-23"
+  week_of: "2026-03-30"
   flag: 0
   summarise_week: false
   plan_week: false
   plan_quarter: false
 monday_tasks:
-  week_of: "2026-03-23"
+  week_of: "2026-03-30"
   flag: 0
   review_ask_campaigns: false
   review_campaigns_churns: false

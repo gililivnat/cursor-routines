@@ -65,12 +65,12 @@ Scan Gmail inbox for urgent or important emails from the last 24 hours. Append a
 
 ---
 
-### 7. Review Upcoming Meetings
+### 7. Review Upcoming Meetings + Customer Prep
 
 **Skill:** `skills/review-upcoming-meetings/SKILL.md`
 **State field:** `daily_start.review_upcoming_meetings`
 
-Review today's calendar using Google Workspace MCP. Highlight important meetings, prepare 3-4 lines of context or talking points for each. Detect customer meetings (external attendees) and offer to run the `prepare-customer-interview` skill for those accounts. Appends a Calendar section to the morning briefing HTML.
+Review today's calendar using Google Workspace MCP. Highlight important meetings, prepare 3-4 lines of context or talking points for each. Detect customer meetings (external attendees) and **automatically run `prepare-customer-interview`** for each customer meeting, producing an HTML dossier per customer. Do not ask the user whether to run it; this is always-on. Appends a Calendar section to the morning briefing HTML.
 
 ---
 

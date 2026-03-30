@@ -13,6 +13,7 @@ Run this skill bi-weekly or when asked for a customer insights roundup. Not part
 
 ## Inputs
 
+- Memory files: `your learnings file`, `your decisions file`, `Memory/feedback.md` (read before starting for preferences and past feedback)
 - Previous VoC reports: `Output/voice-of-customer/` (read most recent 2-3 for running context)
 - Data guide: `your data guide` (read before querying your data warehouse)
 - Product strategy: `your product strategy documentation` (for connecting themes to strategy)
@@ -557,6 +558,7 @@ theme. Connect to strategy and previous reports.]
 - The HTML report should be scannable in ~90 seconds. The markdown report has the depth
 - Read `your tone of voice guide` before writing
 - If a data source is unavailable (e.g. analytics tool not configured), skip gracefully and note it
+- **After approval of:** update `Memory/feedback.md` (what worked/what to improve), `your learnings file` (new preferences), and `your decisions file` (meaningful decisions)
 
 ## Change Log
 

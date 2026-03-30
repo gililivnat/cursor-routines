@@ -11,6 +11,7 @@ This skill is called by the weekly routine on **Friday**. It can also be run ind
 
 ## Inputs
 
+- Memory: `your learnings file`, `your decisions file`, and `Memory/feedback.md` (read before starting)
 - Daily metrics outputs from the current week (in conversation history or `your output folder/`)
 - Daily Slack summaries from the current week
 - Meeting digests from the notetaker

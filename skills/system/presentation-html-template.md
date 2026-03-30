@@ -454,12 +454,106 @@ Every presentation file follows this structure. Copy the full `<style>` and `<sc
     display: none;
   }
 
+  /* ── Title slide aurora ── */
+
+  .slide-hero {
+    overflow: hidden;
+  }
+
+  .slide-hero .aurora {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .slide-hero .aurora-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0;
+    animation: auroraPulse 8s ease-in-out infinite, auroraDrift 20s ease-in-out infinite;
+  }
+
+  .slide-hero.active .aurora-blob {
+    opacity: 1;
+  }
+
+  .slide-hero .aurora-blob:nth-child(1) {
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(0, 212, 255, 0.35) 0%, transparent 70%);
+    top: -15%; left: -10%;
+    animation-delay: 0s;
+  }
+
+  .slide-hero .aurora-blob:nth-child(2) {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, transparent 70%);
+    top: 30%; right: -8%;
+    animation-delay: 2s;
+    animation-duration: 10s, 24s;
+  }
+
+  .slide-hero .aurora-blob:nth-child(3) {
+    width: 450px; height: 450px;
+    background: radial-gradient(circle, rgba(6, 182, 212, 0.25) 0%, transparent 70%);
+    bottom: -10%; left: 25%;
+    animation-delay: 4s;
+    animation-duration: 12s, 18s;
+  }
+
+  .slide-hero .aurora-blob:nth-child(4) {
+    width: 350px; height: 350px;
+    background: radial-gradient(circle, rgba(236, 72, 153, 0.2) 0%, transparent 70%);
+    top: 10%; right: 30%;
+    animation-delay: 3s;
+    animation-duration: 9s, 22s;
+  }
+
+  .slide-hero .aurora-blob:nth-child(5) {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.25) 0%, transparent 70%);
+    bottom: 5%; right: 10%;
+    animation-delay: 1.5s;
+    animation-duration: 11s, 16s;
+  }
+
+  @keyframes auroraPulse {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.15); }
+  }
+
+  @keyframes auroraDrift {
+    0% { translate: 0 0; }
+    25% { translate: 60px -40px; }
+    50% { translate: -30px 50px; }
+    75% { translate: 40px 20px; }
+    100% { translate: 0 0; }
+  }
+
+  .slide-hero .particles-canvas {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .slide-hero h3,
+  .slide-hero h1,
+  .slide-hero p,
+  .slide-hero img {
+    position: relative;
+    z-index: 2;
+  }
+
   /* ── Print / PDF ── */
 
   @media print {
     .slide { position: relative; opacity: 1; pointer-events: all; page-break-after: always; }
     .progress-bar, .slide-counter, .notes-panel { display: none; }
     [data-animate] { opacity: 1 !important; transform: none !important; animation: none !important; }
+    .aurora, .particles-canvas { display: none; }
   }
 </style>
 
@@ -471,8 +565,16 @@ Every presentation file follows this structure. Copy the full `<style>` and `<sc
 
 <div class="deck" id="deck">
 
-  <!-- ─── SLIDE 1: Title ─── -->
-  <section class="slide active" data-slide="1">
+  <!-- ─── SLIDE 1: Title (with aurora + particles) ─── -->
+  <section class="slide slide-hero active" data-slide="1">
+    <div class="aurora">
+      <div class="aurora-blob"></div>
+      <div class="aurora-blob"></div>
+      <div class="aurora-blob"></div>
+      <div class="aurora-blob"></div>
+      <div class="aurora-blob"></div>
+    </div>
+    <canvas class="particles-canvas" id="particlesCanvas"></canvas>
     <h3 data-animate="fade-in">{{SECTION_LABEL}}</h3>
     <h1 data-animate="fade-up" data-delay="1">{{TITLE}}</h1>
     <p data-animate="fade-up" data-delay="2">{{SUBTITLE_OR_DATE}}</p>
@@ -572,6 +674,88 @@ Every presentation file follows this structure. Copy the full `<style>` and `<sc
 })();
 </script>
 
+<!-- Particles animation for title slide -->
+<script>
+(() => {
+  const canvas = document.getElementById('particlesCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let w, h, particles, connDist = 140;
+
+  const colours = [
+    'rgba(0, 212, 255, ',
+    'rgba(139, 92, 246, ',
+    'rgba(59, 130, 246, ',
+    'rgba(236, 72, 153, ',
+    'rgba(6, 182, 212, ',
+  ];
+
+  function resize() {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    w = canvas.width = rect.width;
+    h = canvas.height = rect.height;
+  }
+
+  function createParticles() {
+    const count = Math.floor((w * h) / 12000);
+    particles = [];
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        r: Math.random() * 2 + 1,
+        col: colours[Math.floor(Math.random() * colours.length)],
+        alpha: Math.random() * 0.5 + 0.3,
+        pulse: Math.random() * Math.PI * 2,
+        pulseSpeed: Math.random() * 0.02 + 0.005,
+      });
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.pulse += p.pulseSpeed;
+      if (p.x < -10) p.x = w + 10;
+      if (p.x > w + 10) p.x = -10;
+      if (p.y < -10) p.y = h + 10;
+      if (p.y > h + 10) p.y = -10;
+      const glow = p.alpha + Math.sin(p.pulse) * 0.15;
+      for (let j = i + 1; j < particles.length; j++) {
+        const q = particles[j];
+        const dx = p.x - q.x;
+        const dy = p.y - q.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < connDist) {
+          const lineAlpha = (1 - dist / connDist) * 0.15;
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(q.x, q.y);
+          ctx.strokeStyle = p.col + lineAlpha + ')';
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.col + glow + ')';
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+
+  resize();
+  createParticles();
+  draw();
+  window.addEventListener('resize', () => { resize(); createParticles(); });
+})();
+</script>
+
 </body>
 </html>
 ```
@@ -582,16 +766,28 @@ Below are the HTML patterns for different slide types. Combine and adapt as need
 
 ---
 
-### Title Slide
+### Title Slide (with aurora + particles)
+
+Every presentation's first slide uses the `slide-hero` class, which adds the animated aurora background and floating particle constellation. This is the user's signature opening.
 
 ```html
-<section class="slide" data-slide="N">
+<section class="slide slide-hero" data-slide="N">
+  <div class="aurora">
+    <div class="aurora-blob"></div>
+    <div class="aurora-blob"></div>
+    <div class="aurora-blob"></div>
+    <div class="aurora-blob"></div>
+    <div class="aurora-blob"></div>
+  </div>
+  <canvas class="particles-canvas" id="particlesCanvas"></canvas>
   <h3 data-animate="fade-in">SECTION LABEL</h3>
   <h1 data-animate="fade-up" data-delay="1">Main Title Here</h1>
   <p data-animate="fade-up" data-delay="2">Subtitle or date or context line</p>
   <aside class="notes">Speaker notes go here.</aside>
 </section>
 ```
+
+The aurora uses five colour blobs (cyan, purple, teal, pink, blue) that pulse and drift. The particles canvas draws floating dots with connecting lines. Both are scoped to `.slide-hero` only and hidden in print. The particles script is included at the bottom of the base HTML structure.
 
 ### Content Slide (headline + bullets)
 

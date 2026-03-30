@@ -69,7 +69,7 @@ For each identified customer meeting:
 1. Extract the external attendee's email domain
 2. Note the company name (from the domain or meeting title)
 3. Flag it prominently in the output
-4. **Offer to run the `prepare-customer-interview` skill** (`skills/prepare-customer-interview/SKILL.md`) for that customer
+4. **Automatically run the `prepare-customer-interview` skill** (`skills/prepare-customer-interview/SKILL.md`) for that customer. Do not ask the user first; just run it. Each customer gets their own HTML dossier
 
 ### Step 4 -- Prepare context for important meetings
 
@@ -140,16 +140,19 @@ Insert this section before the closing `</div>` of the main container, after the
 
 Use `urgent` cards for customer meetings, `highlight` for important internal meetings, and plain cards for routine meetings. Show quiet blocks as `success` cards.
 
-**Customer prep offer:** After generating the HTML, if any customer meetings were found, also print a message in the conversation:
+**Automatic customer prep:** After generating the calendar HTML, if any customer meetings were found:
+
+1. For each customer meeting, read and execute `skills/prepare-customer-interview/SKILL.md` using the external attendee's email domain or company name as the customer identifier
+2. Each customer gets a separate HTML dossier saved to `your output folder/customer-interview-prep-{company-slug}-YYYY-MM-DD.html`
+3. Open each dossier with `open`
+4. Print a summary in conversation:
 
 ```
-Found [N] customer meeting(s) today:
-- [Time] -- [Meeting title] with [Company]
-
-Would you like me to run a customer interview prep for any of these?
+Prepared [N] customer interview dossier(s):
+- [Company] (meeting at [time]) -- dossier ready
 ```
 
-Wait for the user's response. If he confirms, read and execute `skills/prepare-customer-interview/SKILL.md` for the specified customer.
+This runs automatically. Do not ask the user whether to run it; he always wants customer prep for customer meetings.
 
 ### When running standalone
 

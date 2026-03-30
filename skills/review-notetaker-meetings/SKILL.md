@@ -195,7 +195,7 @@ Generate HTML content using the routine template at `skills/system/routine-html-
 The notetaker MCP tool may gain new parameters or capabilities over time. To check for changes:
 
 1. Read the tool descriptor at:
-   `[your-workspace-path] user-Workspace/mcps/user-monday-api-mcp/tools/get_notetaker_meetings.json`
+   `[your-workspace-path] user-Workspace/mcps/your-notetaker-mcp/tools/get_notetaker_meetings.json`
 
 2. Compare the descriptor's `properties` against the Parameter Reference table above.
 

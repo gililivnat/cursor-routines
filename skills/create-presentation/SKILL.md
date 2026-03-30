@@ -46,6 +46,10 @@ This is v1. The design system will be refined over time as more presentations ar
 
 ## Workflow
 
+### Step 0: Read memory
+
+Read `your learnings file`, `your decisions file`, and `Memory/feedback.md` before starting. These contain presentation preferences, past decisions, and feedback on previous decks.
+
 ### Step 1: Brief and alignment
 
 Before anything else, confirm these with the user:
@@ -72,7 +76,7 @@ Based on the brief, identify what data is needed and query for it.
 | Source | When to use |
 |--------|-------------|
 | Data Warehouse MCP | Product metrics, usage data, funnel analysis. Use your SQL query tool for specific queries, your data exploration tool for exploration |
-| BigBrain MCP (`user-bigbrain-mcp`) | Broader analytics, error analysis, PR data |
+| Analytics MCP | Broader analytics, error analysis, PR data |
 | your input | Context, qualitative data, specific numbers he provides |
 
 **Process:**
@@ -184,7 +188,7 @@ Build the presentation as a live interactive HTML deck.
 - Present for review before finalising
 
 **Sharing via GitHub Pages:**
-- Default: push to `giladli-mond` GitHub account (ask the user if unsure about audience/repo)
+- Default: push to `your-github-account` GitHub account (ask the user if unsure about audience/repo)
 - Push the presentation folder to the presentations GitHub Pages repo
 - Share the URL with the audience
 
@@ -204,6 +208,13 @@ Match the user's voice: calm, confident, clear. No hyperbole. No filler words.
 Avoid: "Revolutionary", "Game-changing", "Exciting", "Synergy"
 Prefer: Specific, evidence-backed, understated confidence.
 
+## After Approval
+
+When the user approves the presentation:
+1. Update `Memory/feedback.md` with what worked and what needed changing
+2. Update `your learnings file` if new preferences were discovered (e.g. layout, animation, data visualisation)
+3. Update `your decisions file` if meaningful decisions were made (e.g. design system evolution, new template patterns)
+
 ## Additional Resources
 
 - HTML template: `skills/system/presentation-html-template.md`
@@ -214,6 +225,7 @@ Prefer: Specific, evidence-backed, understated confidence.
 - Human writing: `~/.cursor/skills/make-human-lite/SKILL.md`
 - Data guide: `your data guide`
 - Product strategy: `your product strategy documentation`
+- Memory: `your learnings file`, `your decisions file`, `Memory/feedback.md`
 
 ## Change Log
 

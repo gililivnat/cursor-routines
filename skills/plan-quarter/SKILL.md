@@ -18,7 +18,7 @@ This is a thinking aid and planning scaffold, not a fully automated task.
 - Product strategy from `your product strategy documentation`
 - Competitor analysis reports from `your output folder/`
 - Scheduled tasks and their completion status from `your scheduled tasks file`
-- Memory: `your learnings file` and `your decisions file`
+- Memory: `your learnings file`, `your decisions file`, and `Memory/feedback.md`
 
 ## Tools
 

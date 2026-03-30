@@ -109,11 +109,11 @@ Query the same metrics identified in the deck (step 2). At minimum, always inclu
 
 | Metric | Source |
 |--------|--------|
-| ARR | Kremer (your SQL query tool) |
-| Paying accounts | Kremer |
-| DAU | Kremer |
-| Product sent (last 14 days) | Kremer |
-| New signups (last 14 days) | Kremer |
+| ARR | data warehouse (your SQL query tool) |
+| Paying accounts | data warehouse |
+| DAU | data warehouse |
+| Product sent (last 14 days) | data warehouse |
+| New signups (last 14 days) | data warehouse |
 
 For each metric, calculate:
 - **Current value**

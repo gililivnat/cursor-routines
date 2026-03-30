@@ -11,6 +11,7 @@ This skill is called by the weekly routine on **Monday**. It can also be run ind
 
 ## Inputs
 
+- Memory: `your learnings file`, `your decisions file`, and `Memory/feedback.md` (read before starting)
 - Last week's summary from `your output folder/` (for carry-overs)
 - Scheduled tasks due this week from `your scheduled tasks file`
 - Product strategy context from `your product strategy documentation`
