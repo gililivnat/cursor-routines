@@ -6,7 +6,7 @@ daily_start:
   review_campaigns_channels: false
   summarise_slack_suggest_tasks: false
   review_daily_metrics: false
-  weekly_competitor_intel: true        # Monday only — completed
+  weekly_competitor_intel: true        # Monday only — skipped (Tuesday)
   review_gmail: false
   review_upcoming_meetings: false
 daily_end:

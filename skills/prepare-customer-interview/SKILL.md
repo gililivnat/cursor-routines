@@ -52,6 +52,17 @@ If the identifier is ambiguous or returns multiple matches, present the options 
 |------|---------|
 | `WebFetch` | Pull the customer's website to understand their business |
 
+### Call Intelligence MCP
+
+| Tool | Purpose |
+|------|---------|
+| Call search tool | Search for calls involving this customer (by host or call ID) |
+| Call metadata tool | Get call metadata including the call URL (needed for deep links) |
+| Call summary tool | AI-generated summary: key points, topics, action items |
+| Call transcript tool | Full transcript with speaker attribution and timing (use for notable quotes) |
+| Call listing tool | List recent calls to find relevant conversations |
+| User listing tool | Resolve call intelligence platform user IDs to names |
+
 ### Monday API MCP (your meeting notetaker MCP)
 
 | Tool | Purpose |
@@ -180,13 +191,36 @@ Summarise:
 - Direct quotes worth noting
 - Links to relevant Slack threads
 
-### Step 7 -- Search for support tickets (best effort)
+### Step 7 -- Pull call intelligence platform call history
+
+Search for previous calls with this customer using the company name or known contacts.
+
+**Workflow:**
+1. your call listing tool with a broad date range (last 6 months) to find relevant calls
+2. If available, filter by searching call titles or metadata containing the company name
+3. your call summary tool for each matching call (prioritise the 3-5 most recent)
+4. For calls with interesting summaries, use your call metadata tool to retrieve the call URL
+5. Pull the transcript with your call transcript tool to find exact quotes worth referencing in the interview
+6. Construct a deep link for each notable quote: `{call_url}#t={timestamp_in_seconds}` (timestamp comes from the transcript's timing data)
+
+**Summarise:**
+- Number of calls on record and date range
+- Key topics discussed across calls (recurring themes)
+- Action items or commitments made in previous conversations
+- Pain points or feature requests mentioned on calls
+- Sentiment trajectory (are calls getting more positive or negative over time?)
+- Competitor mentions in call discussions
+- Notable verbatim quotes with call deep links (so the user can listen before the interview)
+
+**Note:** If call intelligence platform is not configured or no calls are found for this customer, note it in the output and move on.
+
+### Step 8 -- Search for support tickets (best effort)
 
 Use your meeting notetaker MCP `search` tool to look for the company name across monday boards. If a support or tickets board exists, pull relevant items.
 
 If nothing is found, note: "No dedicated support ticket system accessible. Slack search was used as the primary source for support-related signals."
 
-### Step 8 -- Pull company website
+### Step 9 -- Pull company website
 
 Use `WebFetch` to retrieve the customer's website. Extract:
 - What the company does (industry, product/service)
@@ -196,16 +230,17 @@ Use `WebFetch` to retrieve the customer's website. Extract:
 
 If the website URL is unknown, ask the user to provide it.
 
-### Step 9 -- Compile and generate output
+### Step 10 -- Compile and generate output
 
 #### Short summary (in conversation)
 
-Present 4-6 bullet points covering:
+Present 5-7 bullet points covering:
 - Who they are (company, industry, size)
 - How they use campaigns (volume, types, performance)
 - Financial status (plan, ARR, tenure, risk signals)
 - Other monday products in use
 - Notable feedback or support signals
+- Previous call history and key themes from call intelligence platform (if available)
 - One or two suggested areas to probe in the interview
 
 #### HTML dossier
@@ -333,6 +368,44 @@ Generate an HTML file using the routine template at `skills/system/routine-html-
   </div>
 </div>
 
+<!-- Previous Calls (call intelligence platform) -->
+<div class="section">
+  <div class="section-title">Previous Calls · Call Intelligence</div>
+  <div class="metric-grid">
+    <div class="metric-card">
+      <div class="metric-value">[N]</div>
+      <div class="metric-label">Calls on record</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-value">[date]</div>
+      <div class="metric-label">Most recent call</div>
+    </div>
+  </div>
+  <!-- One card per notable call -->
+  <div class="card highlight">
+    <div class="card-label highlight">[Call date] · [Call title]</div>
+    <div class="card-body">[Key points from call summary: topics, pain points, action items, competitor mentions]</div>
+  </div>
+  <!-- Recurring themes across calls -->
+  <div class="card warning">
+    <div class="card-label warning">Recurring themes</div>
+    <div class="card-body">[Themes that appear across multiple calls: feature requests, objections, frustrations]</div>
+  </div>
+  <!-- Notable quotes with deep links -->
+  <div class="card">
+    <div class="card-label">Notable quotes</div>
+    <div class="card-body">
+      <blockquote>"[Verbatim quote from customer]"<br>
+        <span class="quiet">— [Speaker], <a href="[call_url]#t=[timestamp_seconds]">[Call title, date]</a></span>
+      </blockquote>
+      <blockquote>"[Another quote]"<br>
+        <span class="quiet">— [Speaker], <a href="[call_url]#t=[timestamp_seconds]">[Call title, date]</a></span>
+      </blockquote>
+    </div>
+  </div>
+  <p class="quiet">If no call intelligence platform calls found: "No previous calls found for this customer."</p>
+</div>
+
 <!-- Suggested Interview Questions -->
 <div class="section">
   <div class="section-title">Suggested Interview Questions</div>
@@ -360,3 +433,4 @@ Generate an HTML file using the routine template at `skills/system/routine-html-
 | Date | Change |
 |------|--------|
 | 18 Mar 2026 | Initial version. Sources: your data warehouse (campaigns, financials, product metrics), Slack (campaigns-stats, ask-product, churns), website, analytics platform (best effort), monday boards (best effort). |
+| 31 Mar 2026 | Added call intelligence platform as a data source. Pulls previous call summaries, recurring themes, action items, and competitor mentions for the customer. Surfaces call history in the HTML dossier and short summary. |
