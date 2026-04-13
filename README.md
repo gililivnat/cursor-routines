@@ -189,7 +189,7 @@ cursor-routines/
     ├── plan-quarter/              — quarterly planning
     ├── prepare-biweekly-update/   — director update prep
     ├── prepare-customer-interview/ — customer meeting prep dossier
-    ├── create-presentation/       — ad-hoc presentation builder
+    ├── create-presentation/       — default deck workflow (any presentation the user asks for)
     ├── voice-of-the-customer/     — multi-source VoC report
     ├── onboarding/                — guided first-time setup
     └── system/

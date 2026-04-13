@@ -4,22 +4,22 @@ All presentations are built as self-contained HTML files. This template provides
 
 ## File Naming
 
-Each presentation lives in its own folder:
-- `Output/presentations/YYYY-MM-DD-topic-name/index.html`
-- `Output/presentations/YYYY-MM-DD-topic-name/exec-summary.html` (optional)
+Each presentation lives under a **project** folder (kebab-case slug) with a **`presentation`** subfolder:
+- `Output/<project-name>/presentation/index.html`
+- `Output/<project-name>/presentation/exec-summary.html` (optional)
 
 ## How to Use
 
 1. Build the presentation using the base structure and component patterns below
 2. Preview in browser canvas during creation
-3. When finalised, save to `Output/presentations/YYYY-MM-DD-topic-name/index.html`
+3. When finalised, save to `Output/<project-name>/presentation/index.html`
 4. Open with `open` (macOS) to verify in the default browser
 5. For sharing, push the folder to the presentations GitHub Pages repo
 
 ## Opening the File
 
 ```bash
-open [your-workspace-path] user-Workspace/Output/presentations/YYYY-MM-DD-topic-name/index.html
+open [your-workspace-path] user-Workspace/Output/<project-name>/presentation/index.html
 ```
 
 ## Base HTML Structure

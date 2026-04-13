@@ -1,6 +1,6 @@
 ---
 name: create-presentation
-description: Create presentation decks in the user's signature style. Multi-step workflow covering brief, data gathering, outline, creation (interactive HTML with charts, diagrams, animations), and sharing via GitHub Pages. Use when the user asks to create a presentation, deck, slides, or pitch.
+description: Create presentation decks in the user's signature style. Default whenever the user asks to work on a presentation, deck, slides, or pitch. Multi-step workflow (brief, research, approved skeleton, build) with interactive HTML, charts, diagrams, animations, and optional GitHub Pages. Exception — team biweekly/monthly/quarterly decks in Tools/campaigns-decks/ use that repo's slides-* skills instead.
 ---
 
 # Create Presentation
@@ -9,10 +9,18 @@ Design, build, and share presentations as interactive HTML slide decks in the us
 
 ## When to Use
 
-Run this skill when asked to:
-- Create a presentation, deck, or slides
-- Build a pitch or update for stakeholders
-- Prepare visual material for a meeting or review
+**Default:** Run this skill whenever the user asks to work on a presentation or deck (any topic or session), including:
+- Create or revise a presentation, deck, or slides
+- Build a pitch or stakeholder update
+- Prepare visual material for a meeting, training, or review
+
+**Exception:** Work on recurring **team** decks **inside** `Tools/campaigns-decks/` (Next.js biweekly / monthly / quarterly) uses `Tools/campaigns-decks/AGENTS.md` and the `slides-*` skills, not this workflow.
+
+## End-to-end SOP
+
+**Read first:** `Tools/Workflows/create-presentation.md` — phased flow (**Research → Skeleton → Build**), including **web + internal** research, skeleton approval gate, and **all-at-once vs slide-by-slide** build modes. This skill holds the design system, template paths, and detailed steps; the workflow is the checklist order.
+
+**Save path:** `Output/<project-name>/presentation/` (one folder per project under `Output/`, then `presentation/` for the deck). Never `Output/presentations/`.
 
 ## Design System (v1)
 
@@ -52,40 +60,60 @@ Read `your learnings file`, `your decisions file`, and `Memory/feedback.md` befo
 
 ### Step 1: Brief and alignment
 
-Before anything else, confirm these with the user:
+**1a — Audience and length first.** Do not start Step 2 (research, SQL, web) until **audience** and **length** are clear:
 
 | Question | Why it matters |
 |----------|---------------|
-| **Audience** | Exec, team, customer, external, conference? Determines depth and tone |
+| **Audience** | Who is in the room, what they know, what they need — sets depth, tone, jargon vs plain language |
+| **Length** | Time slot and/or slide budget — sets how many ideas fit and pacing |
+
+If unclear, ask. Summarise in one line before moving on.
+
+**1b — Rest of the brief.** Then confirm:
+
+| Question | Why it matters |
+|----------|---------------|
 | **Goal** | Inform, persuade, align, inspire, or request a decision? |
 | **Context** | Meeting, async review, conference talk, internal share? |
-| **Length** | Approximate slide count or time limit |
 | **Key messages** | What are the 2-3 things the audience must walk away with? |
 | **Data needs** | What metrics or data should be included? Any specific charts? |
 | **Diagrams** | Any flowcharts, journeys, or architecture diagrams needed? |
 | **Materials** | Any existing docs, research, or data the user wants to incorporate? |
 
-Collect all answers before proceeding.
+Collect **1a** before any research; collect **1b** before locking the skeleton.
 
-### Step 2: Data gathering
+### Step 2: Research and data gathering
 
-Based on the brief, identify what data is needed and query for it.
+Based on the brief, identify what evidence is needed and collect it **internally and externally** (see `Tools/Workflows/create-presentation.md` Phase 1).
 
-**Data sources:**
+**Internal data sources:**
 
 | Source | When to use |
 |--------|-------------|
 | Data Warehouse MCP | Product metrics, usage data, funnel analysis. Use your SQL query tool for specific queries, your data exploration tool for exploration |
 | Analytics MCP | Broader analytics, error analysis, PR data |
-| your input | Context, qualitative data, specific numbers he provides |
+| `Strategy/`, `your product strategy documentation` | Strategic framing for product-related storylines |
+| Notion MCP (`user-notion`) | Projects or notes when the deck is tied to documented work |
+| Slack MCP (your Slack MCP) | Recent threads only when the deck materially depends on them |
+| `Output/` | Prior artefacts to reuse or cite |
+| your input | Context, qualitative data, specific numbers, constraints |
+
+**Web and external:**
+
+| Method | When to use |
+|--------|-------------|
+| Web search | Competitor moves, market stats, benchmarks, definitions |
+| Fetch URL | Pages or articles the user links |
+| Public docs | e.g. your product help content when relevant |
+
+Cite external sources in the research summary (title, URL, date if known).
 
 **Process:**
-1. Read `your data guide` for current table schemas and metric definitions
-2. Draft the queries needed based on the brief
-3. Execute queries and aggregate results
-4. Present a data summary to the user: what was found, what's interesting, what could go on slides
-5. the user confirms which data points to include and which to cut
-6. If no data is needed (e.g. a strategy presentation), skip this step
+1. Read `your data guide` for current table schemas and metric definitions before SQL
+2. Draft queries or searches based on the brief; execute and aggregate
+3. Present a **research summary** to the user: findings, gaps, implications for slides
+4. the user confirms what to include, cut, or verify
+5. If no research is needed (e.g. a short internal update), skip accordingly
 
 ### Step 3: Outline
 
@@ -138,12 +166,25 @@ Once the outline is approved, invoke the Storytelling agent to shape it into a c
 
 Build the presentation as a live interactive HTML deck.
 
+**Build modes** (the user chooses; see workflow Phase 3):
+
+| Mode | When |
+|------|------|
+| **All at once** | Skeleton is stable; consistent layouts; tight time — build full `index.html`, then polish |
+| **Slide by slide** (or batches of 3–5) | Heavy visuals, evolving charts, or the user wants incremental review — **required:** preview in **Cursor’s Browser** beside `index.html` (see **Preview in Cursor** below) |
+
+**Preview in Cursor (slide-by-slide / batches):** Keep the deck visible in the IDE, not only in chat.
+
+1. Open **Cursor’s Browser** (Command Palette → Browser / Open Browser) or the integrated preview your build offers. Split view: editor + Browser.
+2. Load the deck: open `index.html` in the Browser, or run a static server in the presentation folder (`npx --yes serve . -p 3456`) and open `http://localhost:3456` if `file://` blocks scripts.
+3. After each slide or batch: save, refresh the Browser.
+
 **Technical reference:**
 - Read the template at `skills/system/presentation-html-template.md` for the full CSS, JS, and component library
 - Read `your tone of voice guide` before writing any slide content
 
 **Build process:**
-1. Start in browser canvas for live preview during development
+1. For slide-by-slide or batches: set up **Cursor’s Browser** (or Simple Browser) beside the editor before adding slides (see **Preview in Cursor** above). For all-at-once, still recommended for polish.
 2. Build the HTML using the template's base structure
 3. For each slide, use the appropriate component pattern from the template
 4. Generate charts using Chart.js with the template's styling defaults
@@ -177,13 +218,13 @@ Build the presentation as a live interactive HTML deck.
 ### Step 5: Finalise and share
 
 **Save:**
-- Save the final HTML to `Output/presentations/YYYY-MM-DD-topic-name/index.html`
+- Save the final HTML to `Output/<project-name>/presentation/index.html` (see workflow for project folder naming)
 - Open with `open` (macOS) for final verification
 
 **Optional: exec summary:**
 - If requested, generate a condensed 1-page exec summary
 - Structure: key takeaways (3-5 bullets) + one key chart/metric + next steps
-- Save as `Output/presentations/YYYY-MM-DD-topic-name/exec-summary.html`
+- Save as `Output/<project-name>/presentation/exec-summary.html`
 - Use the routine HTML template CSS (`skills/system/routine-html-template.md`) for the exec summary
 - Present for review before finalising
 
@@ -196,8 +237,8 @@ Build the presentation as a live interactive HTML deck.
 
 | Output | Location | Format |
 |--------|----------|--------|
-| Presentation | `Output/presentations/YYYY-MM-DD-topic-name/index.html` | Standalone HTML |
-| Exec summary | `Output/presentations/YYYY-MM-DD-topic-name/exec-summary.html` | Standalone HTML (print-ready) |
+| Presentation | `Output/<project-name>/presentation/index.html` | Standalone HTML |
+| Exec summary | `Output/<project-name>/presentation/exec-summary.html` | Standalone HTML (print-ready) |
 | Shared URL | GitHub Pages | Link |
 
 ## Tone on Slides
@@ -217,6 +258,7 @@ When the user approves the presentation:
 
 ## Additional Resources
 
+- **Workflow (SOP):** `Tools/Workflows/create-presentation.md`
 - HTML template: `skills/system/presentation-html-template.md`
 - Routine HTML template (for exec summaries): `skills/system/routine-html-template.md`
 - Storytelling agent: `Agents/storytelling-agent.md`
@@ -234,3 +276,8 @@ When the user approves the presentation:
 | Mar 2026 | Initial version. Basic outline workflow with design system. |
 | 17 Mar 2026 | Major upgrade. Full multi-step workflow: brief, data gathering, outline, interactive HTML creation, sharing via GitHub Pages. Added Chart.js with zoom/pan, SVG diagram generation, speaker notes, element-level animations, exec summary support. |
 | 26 Mar 2026 | Added Step 3b: Storytelling agent integration. After outline approval, the `craft-narrative` skill shapes the outline into a compelling story arc before creation begins. |
+| 8 Apr 2026 | Linked `Tools/Workflows/create-presentation.md`. Expanded Step 2 to web + internal research; Step 4 build modes (all-at-once vs slide-by-slide). |
+| 8 Apr 2026 | Scope: default for **any** deck or presentation request; **`Tools/campaigns-decks/`** team recurring decks are the exception (`slides-*`). |
+| 9 Apr 2026 | Save path: **`Output/<project-name>/presentation/`** per workflow (replaces `Output/presentations/YYYY-MM-DD-topic-name/`). |
+| 8 Apr 2026 | Step 1 split: audience + length (1a) before research; remainder of brief (1b). |
+| 8 Apr 2026 | Slide-by-slide: Cursor’s Browser beside editor; local `serve` if `file://` blocks scripts. |

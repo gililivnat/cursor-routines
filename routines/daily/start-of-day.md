@@ -2,6 +2,8 @@
 
 Run these skills in order at the start of each working day. Each step reads its SKILL.md, executes, and updates `state.md` when done.
 
+**Prerequisite (`/goodmorning` only):** The orchestrator runs `skills/morning-mcp-preflight/SKILL.md` **before** this file. It pings Google Workspace, data warehouse, Analytics, and Slack MCP. If that pre-flight **fails**, do not execute any step below (the routine aborts). If you open this file outside `/goodmorning`, run the pre-flight skill first.
+
 ---
 
 ## Steps

@@ -57,7 +57,7 @@ Compare `date` to today's date.
 
 Based on the slash command, run the corresponding routine:
 
-- **`/goodmorning`** → Read `routines/daily/start-of-day.md` and run any skills whose state field is still `false`. **Conditional skills:** `weekly_competitor_intel` only runs on Mondays. On other days, treat it as already complete (set to `true` and skip). Gmail (step 6) appends to the morning briefing HTML after the main content. Calendar (step 7) appends today's meetings to the morning briefing HTML, detects customer meetings (external attendees), and **automatically runs `prepare-customer-interview` for each customer meeting** (producing an HTML dossier per customer, no confirmation needed). If `daily_start.flag == 1`, tell the user morning routines are already done for today.
+- **`/goodmorning`** → **Pre-flight (mandatory):** Before any start-of-day skill, run `skills/morning-mcp-preflight/SKILL.md`. Ping **Google Workspace** (your Google Workspace MCP), **data warehouse** (your data warehouse MCP), **Analytics** (your analytics MCP), and **Slack** (your Slack MCP). If **any** ping fails, **abort**: do not run steps 1–7 of `daily/start-of-day.md`, do not create morning briefing HTML, do not set `daily_start` completion in `state.md`. Inform the user which MCP failed and that they should fix connections in Cursor Settings → MCP, then re-run `/goodmorning`. If all pings succeed, read `routines/daily/start-of-day.md` and run any skills whose state field is still `false`. **Conditional skills:** `weekly_competitor_intel` only runs on Mondays. On other days, treat it as already complete (set to `true` and skip). Gmail (step 6) appends to the morning briefing HTML after the main content. Calendar (step 7) appends today's meetings to the morning briefing HTML, detects customer meetings (external attendees), and **automatically runs `prepare-customer-interview` for each customer meeting** (producing an HTML dossier per customer, no confirmation needed). If `daily_start.flag == 1`, tell the user morning routines are already done for today.
 - **`/goodnight`** → Read `routines/daily/end-of-day.md` and run any skills whose state field is still `false`. Gmail EOD (step 3) appends email highlights to the EOD summary HTML. task manager review (step 4) appends today's tasks with Postpone and Open in your task manager buttons. If `daily_end.flag == 1`, tell the user end-of-day routines are already done.
 - **`/weekreview`** → Run `weekly/week-summary.md` first. When complete, automatically run `weekly/week-planning.md` for the following week. If `weekly.summarise_week == true` and `weekly.plan_week == true`, tell the user both are already done this week. If only the summary is done, skip to planning. If only planning is done, run the summary first then planning.
 - **`/planweek`** → Run `weekly/week-planning.md` standalone. If `weekly.plan_week == true`, tell the user week planning is already done this week. Use this when planning needs to run outside the Friday review flow.
@@ -132,6 +132,7 @@ All routine steps are backed by skills in `skills/`. The agent reads the SKILL.m
 
 | Order | Skill | Path | State Field |
 |-------|-------|------|-------------|
+| 0 | Morning MCP pre-flight | `skills/morning-mcp-preflight/SKILL.md` | _(no state field; abort entire routine if fail)_ |
 | 1 | Review Slack DMs | `skills/review-slack-dms/SKILL.md` | `review_slack_dms` |
 | 2 | Review Product Channels | `skills/review-campaigns-channels/SKILL.md` | `review_campaigns_channels` |
 | 3 | Summarise Slack + Suggest Tasks | `skills/summarise-slack-and-suggest-tasks/SKILL.md` | `summarise_slack_suggest_tasks` |
@@ -170,7 +171,9 @@ All routine steps are backed by skills in `skills/`. The agent reads the SKILL.m
 When a slash command is triggered and there are steps to run, present them briefly:
 
 ```
-Running start of day (6 steps):
+Running start of day:
+0. MCP pre-flight (Google, data warehouse, Analytics, Slack — abort if any fail)
+Then (6 steps):
 1. Review Slack DMs
 2. Review Product channels
 3. Summarise Slack + suggest tasks
@@ -179,7 +182,7 @@ Running start of day (6 steps):
 6. Review upcoming meetings
 ```
 
-Then run each skill in order, updating `state.md` after each one completes.
+Run **0** first; only if it passes, run **1–6** in order, updating `state.md` after each completing step (not after failed pre-flight).
 
 ---
 
@@ -190,7 +193,7 @@ When the user types `/routines`, display:
 ```
 Available routines:
 
-/goodmorning — Start of day (Slack DMs, Product channels, summary + tasks, metrics, competitor intel on Mondays, Gmail, calendar + customer prep)
+/goodmorning — Start of day (MCP pre-flight Google + data warehouse + Analytics + Slack; then Slack DMs, Product channels, summary + tasks, metrics, competitor intel on Mondays, Gmail, calendar + customer prep)
 /goodnight — End of day (summarise campaigns day, review notetaker meetings, Gmail highlights, task manager task review)
 /weekreview — Week summary + week planning (review the week, then plan the next)
 /planweek — Week planning standalone (priorities, tasks, upcoming meetings)
@@ -212,3 +215,4 @@ Available routines:
 - **Commented-out fields are inactive.** Do not run skills for commented fields. When a new MCP is connected, uncomment the field to activate.
 - **Scheduled tasks in `your scheduled tasks file`** are checked separately and are not part of the flag system. They follow their own cadence/due-date logic.
 - **If no slash command is detected**, do not check routines, do not read state.md, and do not mention routines.
+- **`/goodmorning` MCP pre-flight failure:** Do not set any `daily_start` fields to `true` and do not set `daily_start.flag` to `1`. Do not write `your output folder/morning-briefing-*.html` for that run.
